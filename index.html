@@ -58,12 +58,12 @@
     .s-right { display: flex; align-items: center; gap: 9px; flex-shrink: 0; margin-left: 10px; }
     .s-rem { font-size: 13px; color: var(--blue); font-weight: 500; white-space: nowrap; }
     .s-rem.done { color: var(--green); }
-    .badge-done    { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: #E5E5EA; color: var(--gray); white-space: nowrap; }
-    .badge-rec     { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: #FFF3E0; color: #E65100; white-space: nowrap; }
-    .rec-reason    { font-size: 11px; color: #E65100; }
+    .badge-done  { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: #E5E5EA; color: var(--gray); white-space: nowrap; }
+    .badge-rec   { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: #FFF3E0; color: #E65100; white-space: nowrap; }
+    .rec-reason  { font-size: 11px; color: #E65100; }
     .state-circle { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--gray-light); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; transition: all 0.15s; }
     .state-circle.planned { background: #FFF3E0; border-color: var(--orange); color: var(--orange); }
-    .state-circle.actual  { background: var(--blue);   border-color: var(--blue);   color: #fff; font-size: 14px; }
+    .state-circle.actual  { background: var(--blue); border-color: var(--blue); color: #fff; font-size: 14px; }
     .no-tt-note { font-size: 12px; color: var(--sub); text-align: center; padding: 8px 0 4px; }
 
     /* ── Progress View ── */
@@ -103,7 +103,6 @@
     .r-pending { font-size: 11px; color: var(--orange); margin-top: 2px; }
     .r-minibar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 5px; width: 70px; }
     .r-minibar-fill { height: 100%; border-radius: 2px; }
-
     .r-reports { border-top: 1px solid var(--border); }
     .r-row { display: flex; align-items: center; padding: 9px 14px; gap: 8px; border-bottom: 1px solid var(--gray-bg); }
     .r-row:last-child { border-bottom: none; }
@@ -118,12 +117,36 @@
     .r-deadline-label.past { color: var(--red); font-weight: 600; }
     .r-date-input { border: 1px solid var(--border); border-radius: 8px; background: var(--gray-bg); font-size: 12px; color: var(--sub); font-family: inherit; cursor: pointer; padding: 3px 7px; max-width: 130px; }
     .r-date-input:focus { outline: none; border-color: var(--blue); color: var(--blue); }
+
+    /* ── Setup View ── */
+    .setup-header { padding: 8px 0 20px; }
+    .setup-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    .setup-sub { font-size: 14px; color: var(--sub); line-height: 1.6; }
+    .setup-section { margin-bottom: 20px; }
+    .setup-cat-head { font-size: 12px; font-weight: 600; color: var(--sub); letter-spacing: 0.5px; padding: 0 4px 8px; }
+    .setup-row { display: flex; align-items: center; background: var(--card); border-radius: 12px; padding: 12px 14px; margin-bottom: 7px; cursor: pointer; gap: 10px; border: 2px solid transparent; transition: border-color 0.15s, background 0.15s; -webkit-tap-highlight-color: transparent; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .setup-row.enrolled { border-color: var(--blue); background: #EFF5FF; }
+    .setup-row.at-max { opacity: 0.4; cursor: not-allowed; }
+    .setup-check { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--gray-light); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: transparent; flex-shrink: 0; transition: all 0.15s; }
+    .setup-check.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .setup-info { flex: 1; min-width: 0; }
+    .setup-name { font-size: 15px; font-weight: 600; }
+    .setup-detail { font-size: 12px; color: var(--sub); margin-top: 2px; }
+    .setup-sem { display: flex; gap: 4px; flex-shrink: 0; }
+    .sem-opt { padding: 5px 11px; border-radius: 20px; border: 1.5px solid var(--border); background: transparent; color: var(--sub); font-size: 12px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent; font-family: inherit; }
+    .sem-opt.on { border-color: var(--blue); background: var(--blue); color: #fff; }
+    .setup-footer { padding: 16px 0 4px; }
+    .setup-save-btn { width: 100%; padding: 15px; border-radius: 14px; border: none; background: var(--blue); color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; -webkit-tap-highlight-color: transparent; font-family: inherit; }
+    .setup-save-btn:disabled { background: var(--gray-light); cursor: default; }
+    .setup-autosave { font-size: 12px; color: var(--sub); text-align: center; padding: 10px 0; }
+    .settings-section-head { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+    .danger-btn { width: 100%; padding: 13px; border-radius: 14px; border: 1.5px solid var(--red); background: transparent; color: var(--red); font-size: 15px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent; font-family: inherit; margin-top: 8px; }
   </style>
 </head>
 <body>
 <div id="app">
   <div id="scroll"></div>
-  <nav>
+  <nav id="bottom-nav">
     <button class="nav-btn active" id="nav-today" onclick="showTab('today')">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
         <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.8"/>
@@ -147,39 +170,175 @@
       </svg>
       レポート
     </button>
+    <button class="nav-btn" id="nav-settings" onclick="showTab('settings')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="1.8"/>
+      </svg>
+      設定
+    </button>
   </nav>
 </div>
 
 <script>
-// ── 科目マスタ ──────────────────────────────────────────
-// reports = レポート規定通数, mae/ato or total = スクーリング規定時間数
-const SUBJECTS = [
-  { id: 'gendai_kokugo', name: '現代の国語',              cat: '国語',     type: 'fixed',  mae: 2,  ato: 0,  reports: 6  },
-  { id: 'gengo_bunka',   name: '言語文化',                 cat: '国語',     type: 'fixed',  mae: 0,  ato: 2,  reports: 6  },
-  { id: 'chiri_sogo',    name: '地理総合',                 cat: '地歴',     type: 'fixed',  mae: 2,  ato: 0,  reports: 6  },
-  { id: 'rekishi_sogo',  name: '歴史総合',                 cat: '地歴',     type: 'fixed',  mae: 0,  ato: 2,  reports: 6  },
-  { id: 'kokyou',        name: '公共',                     cat: '公民',     type: 'fixed',  mae: 2,  ato: 0,  reports: 6  },
-  { id: 'sugaku1',       name: '数学Ⅰ',                   cat: '数学',     type: 'annual', total: 4,          reports: 12 },
-  { id: 'kagaku',        name: '科学と人間生活',           cat: '理科',     type: 'annual', total: 8,          reports: 6  },
-  { id: 'taiiku',        name: '体育',                     cat: '体育',     type: 'fixed',  mae: 10, ato: 0,  reports: 2  },
-  { id: 'hoken',         name: '保健',                     cat: '保健体育', type: 'fixed',  mae: 2,  ato: 0,  reports: 6  },
-  { id: 'shodo1',        name: '書道Ⅰ',                   cat: '芸術',     type: 'annual', total: 8,          reports: 6  },
-  { id: 'eigo1',         name: '英語コミュニケーションⅠ', cat: '外国語',   type: 'annual', total: 16,         reports: 12 },
-  { id: 'katei',         name: '家庭基礎',                 cat: '家庭',     type: 'fixed',  mae: 0,  ato: 4,  reports: 4  },
-  { id: 'joho1',         name: '情報Ⅰ',                   cat: '情報',     type: 'fixed',  mae: 4,  ato: 0,  reports: 4  },
+// ── 全科目マスタ ────────────────────────────────────────
+// type:'fixed'→semOptsで選択した学期のみスク / type:'annual'→年間合計
+// credits: 年間単位数（上限30単位）
+const ALL_SUBJECTS = [
+  // 国語（4科目 + 1設置）
+  { id: 'gendai_kokugo',  name: '現代の国語',              cat: '国語',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 2,  reports: 6,  credits: 2 },
+  { id: 'gengo_bunka',    name: '言語文化',                 cat: '国語',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 2,  reports: 6,  credits: 2 },
+  { id: 'ronri_kokugo',   name: '論理国語',                 cat: '国語',     type: 'fixed',  semOpts: ['前期'],        skuPerSem: 4,  reports: 8,  credits: 4 },
+  { id: 'kokugo_hyogen',  name: '国語表現',                 cat: '国語',     type: 'fixed',  semOpts: ['前期'],        skuPerSem: 4,  reports: 8,  credits: 4 },
+  { id: 'kokugo_basic',   name: '国語ベーシック',           cat: '国語',     type: 'fixed',  semOpts: ['前期'],        skuPerSem: 2,  reports: 4,  credits: 2 },
+  // 地歴（4科目 + 1設置）
+  { id: 'chiri_sogo',     name: '地理総合',                 cat: '地歴',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 2,  reports: 6,  credits: 2 },
+  { id: 'rekishi_sogo',   name: '歴史総合',                 cat: '地歴',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 2,  reports: 6,  credits: 2 },
+  { id: 'nihonshi',       name: '日本史探究',               cat: '地歴',     type: 'annual', total: 4,                 reports: 8,  credits: 4 },
+  { id: 'sekaisshi',      name: '世界史探究',               cat: '地歴',     type: 'annual', total: 4,                 reports: 8,  credits: 4 },
+  { id: 'edo_tokyo',      name: '江戸から東京へ',           cat: '地歴',     type: 'fixed',  semOpts: ['前期'],        skuPerSem: 2,  reports: 4,  credits: 2 },
+  // 公民（2科目）
+  { id: 'kokyou',         name: '公共',                     cat: '公民',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 2,  reports: 6,  credits: 2 },
+  { id: 'seiji_keizai',   name: '政治・経済',               cat: '公民',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 2,  reports: 6,  credits: 2 },
+  // 数学（3科目 + 1設置）
+  { id: 'sugaku1',        name: '数学Ⅰ',                   cat: '数学',     type: 'annual', total: 4,                 reports: 12, credits: 4 },
+  { id: 'sugaku2',        name: '数学Ⅱ',                   cat: '数学',     type: 'annual', total: 4,                 reports: 12, credits: 4 },
+  { id: 'sugakuA',        name: '数学A',                    cat: '数学',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 2,  reports: 4,  credits: 2 },
+  { id: 'sugaku_basic',   name: '数学ベーシック',           cat: '数学',     type: 'fixed',  semOpts: ['前期'],        skuPerSem: 2,  reports: 4,  credits: 2 },
+  // 理科（5科目 + 2設置）
+  { id: 'kagaku',         name: '科学と人間生活',           cat: '理科',     type: 'annual', total: 8,                 reports: 6,  credits: 2 },
+  { id: 'butsuri',        name: '物理基礎',                 cat: '理科',     type: 'annual', total: 4,                 reports: 6,  credits: 2 },
+  { id: 'kagaku_kiso',    name: '化学基礎',                 cat: '理科',     type: 'annual', total: 4,                 reports: 6,  credits: 2 },
+  { id: 'seibutsu',       name: '生物基礎',                 cat: '理科',     type: 'annual', total: 4,                 reports: 6,  credits: 2 },
+  { id: 'chigaku',        name: '地学基礎',                 cat: '理科',     type: 'annual', total: 4,                 reports: 6,  credits: 2 },
+  { id: 'basic_sciA',     name: 'ベーシックサイエンスA',    cat: '理科',     type: 'fixed',  semOpts: ['前期'],        skuPerSem: 2,  reports: 4,  credits: 2 },
+  { id: 'basic_sciB',     name: 'ベーシックサイエンスB',    cat: '理科',     type: 'fixed',  semOpts: ['後期'],        skuPerSem: 2,  reports: 4,  credits: 2 },
+  // 保健体育（3科目）
+  { id: 'taiiku_mae',     name: '体育〔前期〕',             cat: '保健体育', type: 'fixed',  semOpts: ['前期'],        skuPerSem: 10, reports: 2, credits: 2 },
+  { id: 'taiiku_ato',     name: '体育〔後期〕',             cat: '保健体育', type: 'fixed',  semOpts: ['後期'],        skuPerSem: 10, reports: 2, credits: 2 },
+  { id: 'hoken',          name: '保健',                     cat: '保健体育', type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 2,  reports: 6,  credits: 2 },
+  // 芸術（7科目）
+  { id: 'ongaku1',        name: '音楽Ⅰ',                   cat: '芸術',     type: 'annual', total: 4,                 reports: 6,  credits: 2 },
+  { id: 'ongaku2',        name: '音楽Ⅱ',                   cat: '芸術',     type: 'annual', total: 4,                 reports: 6,  credits: 2 },
+  { id: 'bijutsu1',       name: '美術Ⅰ',                   cat: '芸術',     type: 'annual', total: 4,                 reports: 6,  credits: 2 },
+  { id: 'bijutsu2',       name: '美術Ⅱ',                   cat: '芸術',     type: 'annual', total: 4,                 reports: 6,  credits: 2 },
+  { id: 'shodo1',         name: '書道Ⅰ',                   cat: '芸術',     type: 'annual', total: 8,                 reports: 6,  credits: 2 },
+  { id: 'shodo2',         name: '書道Ⅱ',                   cat: '芸術',     type: 'annual', total: 8,                 reports: 6,  credits: 2 },
+  { id: 'kogei1',         name: '工芸Ⅰ',                   cat: '芸術',     type: 'annual', total: 4,                 reports: 6,  credits: 2 },
+  // 外国語（5科目 + 1設置）
+  { id: 'eigo1',          name: '英語コミュニケーションⅠ',    cat: '外国語',   type: 'annual', total: 16,                reports: 12, credits: 4 },
+  { id: 'eigo2_1',        name: '英語コミュニケーションⅡ-Ⅰ', cat: '外国語',   type: 'fixed',  semOpts: ['前期'],        skuPerSem: 8,  reports: 6,  credits: 2 },
+  { id: 'eigo2_2',        name: '英語コミュニケーションⅡ-Ⅱ', cat: '外国語',   type: 'fixed',  semOpts: ['後期'],        skuPerSem: 8,  reports: 6,  credits: 2 },
+  { id: 'ronri_hyogen1',  name: '論理・表現Ⅰ',              cat: '外国語',   type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 2,  reports: 6,  credits: 2 },
+  { id: 'basic_eigo',     name: 'ベーシック英会話',           cat: '外国語',   type: 'fixed',  semOpts: ['前期'],        skuPerSem: 2,  reports: 4,  credits: 2 },
+  // 家庭（2科目）
+  { id: 'katei',          name: '家庭基礎',                 cat: '家庭',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 4,  reports: 4,  credits: 2 },
+  { id: 'ikuji',          name: '育児基礎',                 cat: '家庭',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 2,  reports: 4,  credits: 2 },
+  // 情報（3科目）
+  { id: 'joho1',          name: '情報Ⅰ',                   cat: '情報',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 4,  reports: 4,  credits: 2 },
+  { id: 'joho_design',    name: '情報デザイン',             cat: '情報',     type: 'fixed',  semOpts: ['前期'],        skuPerSem: 4,  reports: 4,  credits: 2 },
+  { id: 'joho_basic',     name: '情報ベーシック',           cat: '情報',     type: 'fixed',  semOpts: ['前期'],        skuPerSem: 2,  reports: 4,  credits: 2 },
+  // 商業（3科目）
+  { id: 'biz_kiso',       name: 'ビジネス基礎',             cat: '商業',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 2,  reports: 4,  credits: 2 },
+  { id: 'marketing',      name: 'マーケティング',           cat: '商業',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 2,  reports: 4,  credits: 2 },
+  { id: 'biz_houki',      name: 'ビジネス法規',             cat: '商業',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 2,  reports: 4,  credits: 2 },
 ];
+const CREDIT_MAX = 30;
 
-// ── 登校日リスト ──────────────────────────────────────
+// ── デフォルト設定（既存ユーザー後方互換） ─────────────────
+const DEFAULT_CONFIG = {
+  setup_done: true,
+  subjects: {
+    gendai_kokugo: { enrolled: true, sem: '前期' },
+    gengo_bunka:   { enrolled: true, sem: '後期' },
+    chiri_sogo:    { enrolled: true, sem: '前期' },
+    rekishi_sogo:  { enrolled: true, sem: '後期' },
+    kokyou:        { enrolled: true, sem: '前期' },
+    sugaku1:       { enrolled: true },
+    kagaku:        { enrolled: true },
+    taiiku_mae:    { enrolled: true },
+    hoken:         { enrolled: true, sem: '前期' },
+    shodo1:        { enrolled: true },
+    eigo1:         { enrolled: true },
+    katei:         { enrolled: true, sem: '後期' },
+    joho1:         { enrolled: true, sem: '前期' },
+  }
+};
+
+// ── 設定管理 ──────────────────────────────────────────
+const CONFIG_KEY = 'tani_config_v1';
+function loadConfig() {
+  try {
+    const s = JSON.parse(localStorage.getItem(CONFIG_KEY) || 'null');
+    if (s) {
+      let changed = false;
+      // 移行: taiiku → taiiku_mae
+      if (s.subjects?.taiiku) {
+        s.subjects.taiiku_mae = { enrolled: s.subjects.taiiku.enrolled };
+        delete s.subjects.taiiku;
+        changed = true;
+      }
+      // 移行: eigo2 → eigo2_1
+      if (s.subjects?.eigo2) {
+        s.subjects.eigo2_1 = { enrolled: s.subjects.eigo2.enrolled };
+        delete s.subjects.eigo2;
+        changed = true;
+      }
+      // 移行：前期/後期選択が必要な科目に sem フィールドがなければ DEFAULT_CONFIG から補完
+      for (const subj of ALL_SUBJECTS) {
+        if (subj.type === 'fixed' && subj.semOpts.length > 1 && s.subjects?.[subj.id]?.enrolled && !s.subjects[subj.id].sem) {
+          s.subjects[subj.id].sem = DEFAULT_CONFIG.subjects?.[subj.id]?.sem || subj.semOpts[0];
+          changed = true;
+        }
+      }
+      if (changed) localStorage.setItem(CONFIG_KEY, JSON.stringify(s));
+      return s;
+    }
+    const existing = JSON.parse(localStorage.getItem('tani_v3') || '[]');
+    if (existing.length > 0) {
+      localStorage.setItem(CONFIG_KEY, JSON.stringify(DEFAULT_CONFIG));
+      return DEFAULT_CONFIG;
+    }
+    return null;
+  } catch { return null; }
+}
+function saveConfig() { localStorage.setItem(CONFIG_KEY, JSON.stringify(studentConfig)); }
+let studentConfig = loadConfig() || { setup_done: false, subjects: {} };
+
+// ── 単位計算 ──────────────────────────────────────────
+function totalEnrolledCredits() {
+  const cfg = studentConfig.subjects || {};
+  return ALL_SUBJECTS.filter(s => cfg[s.id]?.enrolled).reduce((sum, s) => sum + (s.credits || 0), 0);
+}
+
+// ── アクティブ科目 ────────────────────────────────────
+function getActiveSubjects() {
+  const cfg = studentConfig.subjects || {};
+  return ALL_SUBJECTS.filter(s => cfg[s.id]?.enrolled).map(s => {
+    if (s.type === 'annual') {
+      return { id: s.id, name: s.name, cat: s.cat, type: 'annual', total: s.total, reports: s.reports };
+    }
+    const sem = cfg[s.id]?.sem || s.semOpts[0];
+    return {
+      id: s.id, name: s.name, cat: s.cat, type: 'fixed',
+      mae: sem === '前期' ? s.skuPerSem : 0,
+      ato: sem === '後期' ? s.skuPerSem : 0,
+      reports: s.reports
+    };
+  });
+}
+
+// ── 登校日リスト ─────────────────────────────────────
 const SCHOOL_DAYS = [
-  { date: '2026-04-25', sem: '前期', week: 1 },
-  { date: '2026-05-02', sem: '前期', week: 2 },
-  { date: '2026-05-09', sem: '前期', week: 3 },
-  { date: '2026-05-16', sem: '前期', week: 4 },
-  { date: '2026-05-23', sem: '前期', week: 5 },
-  { date: '2026-05-30', sem: '前期', week: 6 },
-  { date: '2026-06-06', sem: '前期', week: 7 },
-  { date: '2026-06-13', sem: '前期', week: 8 },
-  { date: '2026-06-20', sem: '前期', week: 9 },
+  { date: '2026-04-25', sem: '前期', week: 1  },
+  { date: '2026-05-02', sem: '前期', week: 2  },
+  { date: '2026-05-09', sem: '前期', week: 3  },
+  { date: '2026-05-16', sem: '前期', week: 4  },
+  { date: '2026-05-23', sem: '前期', week: 5  },
+  { date: '2026-05-30', sem: '前期', week: 6  },
+  { date: '2026-06-06', sem: '前期', week: 7  },
+  { date: '2026-06-13', sem: '前期', week: 8  },
+  { date: '2026-06-20', sem: '前期', week: 9  },
   { date: '2026-06-27', sem: '前期', week: 10 },
   { date: '2026-07-04', sem: '前期', week: 11 },
   { date: '2026-07-11', sem: '前期', week: 12 },
@@ -187,15 +346,15 @@ const SCHOOL_DAYS = [
   { date: '2026-07-31', sem: '前期', week: 14 },
   { date: '2026-09-05', sem: '前期', week: 15 },
   { date: '2026-09-12', sem: '前期', week: 16 },
-  { date: '2026-10-03', sem: '後期', week: 1 },
-  { date: '2026-10-10', sem: '後期', week: 2 },
-  { date: '2026-10-17', sem: '後期', week: 3 },
-  { date: '2026-10-24', sem: '後期', week: 4 },
-  { date: '2026-10-31', sem: '後期', week: 5 },
-  { date: '2026-11-07', sem: '後期', week: 6 },
-  { date: '2026-11-14', sem: '後期', week: 7 },
-  { date: '2026-11-21', sem: '後期', week: 8 },
-  { date: '2026-11-28', sem: '後期', week: 9 },
+  { date: '2026-10-03', sem: '後期', week: 1  },
+  { date: '2026-10-10', sem: '後期', week: 2  },
+  { date: '2026-10-17', sem: '後期', week: 3  },
+  { date: '2026-10-24', sem: '後期', week: 4  },
+  { date: '2026-10-31', sem: '後期', week: 5  },
+  { date: '2026-11-07', sem: '後期', week: 6  },
+  { date: '2026-11-14', sem: '後期', week: 7  },
+  { date: '2026-11-21', sem: '後期', week: 8  },
+  { date: '2026-11-28', sem: '後期', week: 9  },
   { date: '2026-12-05', sem: '後期', week: 10 },
   { date: '2026-12-12', sem: '後期', week: 11 },
   { date: '2026-12-19', sem: '後期', week: 12 },
@@ -204,7 +363,7 @@ const SCHOOL_DAYS = [
   { date: '2027-01-23', sem: '後期', week: 15 },
 ];
 
-// ── 時間割 ────────────────────────────────────────────
+// ── 時限定義 ─────────────────────────────────────────
 const PERIODS_DEF = [
   { id: 1,  label: '1時限',    time: '8:40〜9:30'   },
   { id: 2,  label: '2時限',    time: '9:40〜10:30'  },
@@ -213,117 +372,118 @@ const PERIODS_DEF = [
   { id: 7,  label: '7時限',    time: '15:00〜15:50' },
 ];
 
+// ── 時間割（ベースデータ） ────────────────────────────────
 const TIMETABLE = {
   '2026-04-25': {
     1:  ['sugaku1', 'hoken'],
     2:  ['chiri_sogo', 'kokyou', 'kagaku'],
     34: 'special:LHR・避難訓練・全校集会',
-    56: ['taiiku', 'shodo1', 'eigo1'],
+    56: ['taiiku_mae', 'shodo1', 'eigo1'],
     7:  ['gendai_kokugo', 'kagaku'],
   },
   '2026-05-02': {
     1:  ['sugaku1', 'hoken'],
     2:  ['chiri_sogo', 'kagaku'],
     34: ['eigo1', 'joho1'],
-    56: ['taiiku', 'shodo1', 'eigo1'],
+    56: ['taiiku_mae', 'shodo1', 'eigo1'],
     7:  ['gendai_kokugo'],
   },
   '2026-05-09': {
     1:  ['sugaku1', 'hoken'],
     2:  ['chiri_sogo', 'kokyou', 'kagaku'],
     34: ['eigo1', 'joho1'],
-    56: ['taiiku', 'shodo1', 'eigo1'],
+    56: ['taiiku_mae', 'shodo1', 'eigo1'],
     7:  ['gendai_kokugo', 'kagaku'],
   },
   '2026-05-16': {
     1:  ['sugaku1', 'hoken'],
     2:  ['chiri_sogo', 'kokyou', 'kagaku'],
     34: ['eigo1', 'joho1'],
-    56: ['taiiku', 'shodo1', 'eigo1'],
+    56: ['taiiku_mae', 'shodo1', 'eigo1'],
     7:  ['gendai_kokugo', 'kagaku'],
   },
   '2026-05-23': {
     1:  ['sugaku1', 'hoken'],
     2:  ['chiri_sogo', 'kokyou'],
     34: ['eigo1', 'joho1'],
-    56: ['taiiku', 'shodo1', 'eigo1'],
+    56: ['taiiku_mae', 'shodo1', 'eigo1'],
     7:  ['gendai_kokugo'],
   },
   '2026-05-30': {
     1:  ['sugaku1', 'hoken'],
     2:  ['chiri_sogo', 'kagaku'],
     34: ['eigo1', 'joho1'],
-    56: ['taiiku', 'shodo1', 'eigo1'],
+    56: ['taiiku_mae', 'shodo1', 'eigo1'],
     7:  ['gendai_kokugo'],
   },
   '2026-06-06': {
     1:  ['sugaku1', 'hoken'],
     2:  ['kokyou', 'kagaku'],
     34: ['eigo1', 'joho1'],
-    56: ['taiiku', 'shodo1', 'eigo1'],
+    56: ['taiiku_mae', 'shodo1', 'eigo1'],
     7:  ['gendai_kokugo', 'kagaku'],
   },
   '2026-06-13': {
     1:  ['sugaku1', 'hoken'],
     2:  ['chiri_sogo', 'kokyou'],
     34: ['eigo1', 'joho1'],
-    56: ['taiiku', 'shodo1', 'eigo1'],
+    56: ['taiiku_mae', 'shodo1', 'eigo1'],
     7:  ['gendai_kokugo'],
   },
   '2026-06-20': {
     1:  ['sugaku1', 'hoken'],
     2:  ['chiri_sogo', 'kagaku'],
     34: ['eigo1', 'joho1'],
-    56: ['taiiku', 'shodo1', 'eigo1'],
+    56: ['taiiku_mae', 'shodo1', 'eigo1'],
     7:  ['gendai_kokugo', 'kagaku'],
   },
   '2026-06-27': {
     1:  ['hoken'],
     2:  ['kokyou', 'kagaku'],
     34: ['eigo1', 'joho1'],
-    56: ['taiiku', 'shodo1', 'eigo1'],
+    56: ['taiiku_mae', 'shodo1', 'eigo1'],
     7:  ['gendai_kokugo', 'kagaku'],
   },
   '2026-07-04': {
     1:  ['sugaku1', 'hoken'],
     2:  ['chiri_sogo', 'kokyou'],
     34: ['eigo1', 'joho1'],
-    56: ['taiiku', 'shodo1', 'eigo1'],
+    56: ['taiiku_mae', 'shodo1', 'eigo1'],
     7:  ['gendai_kokugo'],
   },
   '2026-07-11': {
     1:  ['sugaku1'],
     2:  ['chiri_sogo', 'kagaku'],
     34: ['eigo1', 'joho1'],
-    56: ['taiiku', 'shodo1', 'eigo1'],
+    56: ['taiiku_mae', 'shodo1', 'eigo1'],
     7:  ['gendai_kokugo'],
   },
   '2026-07-18': {
     1:  ['sugaku1', 'hoken'],
     2:  ['kokyou', 'kagaku'],
     34: ['eigo1'],
-    56: ['taiiku', 'shodo1', 'eigo1'],
+    56: ['taiiku_mae', 'shodo1', 'eigo1'],
     7:  ['gendai_kokugo'],
   },
   '2026-07-31': {
     1:  ['sugaku1', 'hoken'],
     2:  ['chiri_sogo', 'kokyou'],
     34: ['eigo1'],
-    56: ['taiiku', 'shodo1', 'eigo1'],
+    56: ['taiiku_mae', 'shodo1', 'eigo1'],
     7:  ['gendai_kokugo'],
   },
   '2026-09-05': {
     1:  ['sugaku1', 'hoken'],
     2:  ['chiri_sogo', 'kokyou', 'kagaku'],
     34: ['eigo1', 'joho1'],
-    56: ['taiiku', 'shodo1', 'eigo1'],
+    56: ['taiiku_mae', 'shodo1', 'eigo1'],
     7:  ['gendai_kokugo'],
   },
   '2026-09-12': {
     1:  ['sugaku1', 'hoken'],
     2:  ['chiri_sogo', 'kagaku'],
     34: ['eigo1', 'joho1'],
-    56: ['taiiku', 'shodo1', 'eigo1'],
+    56: ['taiiku_mae', 'shodo1', 'eigo1'],
     7:  ['gendai_kokugo'],
   },
   '2026-10-03': {
@@ -433,8 +593,50 @@ const TIMETABLE = {
   },
 };
 
+// ── 時間割拡張（全生徒対応） ──────────────────────────────
+// 全日追加する科目
+(function augmentTimetable() {
+  const EXTRA_ALL = {
+    1:  ['sugaku2', 'sugakuA', 'sugaku_basic'],
+    2:  ['butsuri', 'kagaku_kiso', 'seibutsu', 'chigaku', 'seiji_keizai', 'nihonshi', 'sekaisshi', 'edo_tokyo', 'biz_kiso', 'marketing', 'biz_houki'],
+    34: ['ronri_hyogen1', 'ikuji'],
+    56: ['ongaku1', 'ongaku2', 'bijutsu1', 'bijutsu2', 'shodo2', 'kogei1'],
+    7:  ['ronri_kokugo', 'kokugo_hyogen', 'kokugo_basic'],
+  };
+  const EXTRA_MAE = {
+    2:  ['gengo_bunka', 'rekishi_sogo', 'basic_sciA'],
+    34: ['katei', 'eigo2_1', 'joho_design', 'joho_basic', 'basic_eigo'],
+    56: ['taiiku_mae'],
+  };
+  const EXTRA_ATO = {
+    1:  ['hoken'],
+    2:  ['kokyou', 'chiri_sogo', 'basic_sciB'],
+    7:  ['gendai_kokugo'],
+    34: ['joho1', 'eigo2_2'],
+    56: ['taiiku_ato'],
+  };
+
+  for (const day of SCHOOL_DAYS) {
+    const tt = TIMETABLE[day.date];
+    if (!tt) continue;
+    const semExtra = day.sem === '後期' ? EXTRA_ATO : EXTRA_MAE;
+    const combined = {};
+    for (const [p, ids] of Object.entries(EXTRA_ALL)) combined[p] = [...ids];
+    for (const [p, ids] of Object.entries(semExtra)) {
+      combined[p] = combined[p] ? [...combined[p], ...ids] : [...ids];
+    }
+    for (const [pStr, ids] of Object.entries(combined)) {
+      const pid = Number(pStr);
+      if (typeof tt[pid] === 'string') continue;
+      if (!Array.isArray(tt[pid])) continue;
+      for (const id of ids) {
+        if (!tt[pid].includes(id)) tt[pid].push(id);
+      }
+    }
+  }
+})();
+
 // ── 出席 Storage ──────────────────────────────────────
-// v3: record key は (date, id, periodId) の組み合わせ
 const ATTEND_KEY = 'tani_v3';
 function loadAttend() {
   try { return JSON.parse(localStorage.getItem(ATTEND_KEY) || '[]'); } catch { return []; }
@@ -451,8 +653,6 @@ function saveReportData() { localStorage.setItem(REPORT_KEY, JSON.stringify(rptD
 let rptData = loadReports();
 
 // ── 出席 状態管理 ─────────────────────────────────────
-// キー: (date, id, periodId)
-// none → planned(予定) → actual(実績) → none
 const DOUBLE_PERIODS = [34, 56];
 
 function getState(date, id, periodId) {
@@ -488,7 +688,7 @@ function getProgress(subj) {
   };
 }
 function totalRemaining() {
-  return SUBJECTS.reduce((s, subj) => {
+  return getActiveSubjects().reduce((s, subj) => {
     const p = getProgress(subj);
     return s + (p.type === 'annual' ? p.remaining : p.mae.rem + p.ato.rem);
   }, 0);
@@ -504,7 +704,6 @@ function priorityScore(subj, sem, p) {
 }
 
 // ── レポート管理 ──────────────────────────────────────
-// status: 'none' | 'submitted' | 'passed'
 function getReport(id, num) {
   return (rptData[id] && rptData[id][num]) || { status: 'none', deadline: null };
 }
@@ -567,12 +766,98 @@ let expandedSubjects = new Set();
 // ── Render ────────────────────────────────────────────
 function render() {
   const el = document.getElementById('scroll');
-  if (currentTab === 'today')    el.innerHTML = renderToday();
+  const nav = document.getElementById('bottom-nav');
+
+  if (!studentConfig.setup_done) {
+    el.innerHTML = renderSetup(false);
+    nav.style.display = 'none';
+    return;
+  }
+
+  nav.style.display = '';
+  if (currentTab === 'today')         el.innerHTML = renderToday();
   else if (currentTab === 'progress') el.innerHTML = renderProgress();
-  else                           el.innerHTML = renderReports();
-  document.getElementById('nav-today').classList.toggle('active', currentTab === 'today');
-  document.getElementById('nav-progress').classList.toggle('active', currentTab === 'progress');
-  document.getElementById('nav-report').classList.toggle('active', currentTab === 'report');
+  else if (currentTab === 'report')   el.innerHTML = renderReports();
+  else if (currentTab === 'settings') el.innerHTML = renderSettings();
+
+  ['today','progress','report','settings'].forEach(t => {
+    document.getElementById('nav-'+t).classList.toggle('active', currentTab === t);
+  });
+}
+
+// ── Setup View ────────────────────────────────────────
+function renderSetup(isSettings) {
+  const cfg = studentConfig.subjects || {};
+  const cats = [...new Set(ALL_SUBJECTS.map(s => s.cat))];
+  const usedCredits = totalEnrolledCredits();
+  const enrolledCount = Object.values(cfg).filter(v => v && v.enrolled).length;
+  const atMax = usedCredits >= CREDIT_MAX;
+  const creditPct = Math.min(100, usedCredits / CREDIT_MAX * 100);
+  const creditColor = usedCredits >= CREDIT_MAX ? 'var(--red)' : usedCredits >= 27 ? 'var(--orange)' : 'var(--blue)';
+
+  let html = `<div class="setup-header">
+    <div class="setup-title">${isSettings ? '科目を変更' : '科目登録'}</div>
+    <div class="setup-sub">${isSettings
+      ? '変更は自動で保存されます'
+      : '受講する科目を選択してください。前期・後期はどちらで受けるかを選んでください。'
+    }</div>
+    <div style="margin-top:14px;background:var(--card);border-radius:12px;padding:12px 14px;box-shadow:0 1px 3px rgba(0,0,0,0.07)">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+        <span style="font-size:13px;font-weight:600;color:var(--sub)">年間単位数</span>
+        <span style="font-size:20px;font-weight:700;color:${creditColor}">${usedCredits}<span style="font-size:13px;font-weight:500;color:var(--sub)"> / ${CREDIT_MAX} 単位</span></span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:${creditPct}%;background:${creditColor}"></div></div>
+      ${atMax ? `<div style="font-size:12px;color:var(--red);margin-top:6px;font-weight:600">上限（${CREDIT_MAX}単位）に達しました。科目を減らすか入れ替えてください。</div>` : ''}
+    </div>
+  </div>`;
+
+  for (const cat of cats) {
+    const subjects = ALL_SUBJECTS.filter(s => s.cat === cat);
+    html += `<div class="setup-section"><div class="setup-cat-head">${cat}</div>`;
+    for (const s of subjects) {
+      const enrolled = !!cfg[s.id]?.enrolled;
+      const needsSem = s.type === 'fixed' && s.semOpts && s.semOpts.length === 2;
+      const sem = s.type === 'fixed' ? (cfg[s.id]?.sem || s.semOpts[0]) : null;
+      const detail = s.type === 'annual'
+        ? `${s.credits}単位 ／ 年間スク${s.total}h ／ レポ${s.reports}通`
+        : `${s.credits}単位 ／ スク${s.skuPerSem}h ／ レポ${s.reports}通${s.semOpts.length === 1 ? '（'+s.semOpts[0]+'のみ）' : ''}`;
+      const wouldExceed = !enrolled && atMax;
+      html += `
+        <div class="setup-row${enrolled ? ' enrolled' : ''}${wouldExceed ? ' at-max' : ''}" onclick="${wouldExceed ? '' : `toggleEnroll('${s.id}')`}">
+          <div class="setup-check${enrolled ? ' on' : ''}">✓</div>
+          <div class="setup-info">
+            <div class="setup-name">${s.name}</div>
+            <div class="setup-detail">${detail}</div>
+          </div>
+          ${enrolled && needsSem ? `
+            <div class="setup-sem" onclick="event.stopPropagation()">
+              <button class="sem-opt${sem==='前期'?' on':''}" onclick="setSem('${s.id}','前期')">前期</button>
+              <button class="sem-opt${sem==='後期'?' on':''}" onclick="setSem('${s.id}','後期')">後期</button>
+            </div>` : `<span style="font-size:12px;font-weight:600;color:${enrolled?'var(--blue)':'var(--gray-light)'}">+${s.credits}単位</span>`}
+        </div>`;
+    }
+    html += `</div>`;
+  }
+
+  if (!isSettings) {
+    html += `<div class="setup-footer">
+      <button class="setup-save-btn" ${enrolledCount === 0 ? 'disabled' : 'onclick="completeSetup()"'}>
+        ${enrolledCount === 0 ? '科目を選択してください' : `${enrolledCount}科目・${usedCredits}単位で登録`}
+      </button>
+    </div>`;
+  }
+
+  return html;
+}
+
+// ── Settings View ─────────────────────────────────────
+function renderSettings() {
+  return `
+    <div class="settings-section-head">設定</div>
+    ${renderSetup(true)}
+    <div style="margin-top:24px;margin-bottom:8px;font-size:13px;font-weight:600;color:var(--sub)">データ管理</div>
+    <button class="danger-btn" onclick="confirmReset()">出席・レポートデータをリセット</button>
+    <div style="font-size:11px;color:var(--sub);margin-top:8px;text-align:center">Ver. 2.0 ／ 東京都立砂川高校 通信制</div>`;
 }
 
 // ── Today View ────────────────────────────────────────
@@ -582,6 +867,7 @@ function renderToday() {
   const today = todayStr();
   const isFuture = date > today;
   const tt = TIMETABLE[date];
+  const activeSubjs = getActiveSubjects();
 
   const header = `
     <div class="day-header">
@@ -603,7 +889,7 @@ function renderToday() {
   </div>`;
 
   if (!tt) {
-    return header + `<p class="no-tt-note">※この日の時間割データは未登録です</p>` + legend + renderFlatList(date, sem);
+    return header + `<p class="no-tt-note">※この日の時間割データは未登録です</p>` + legend + renderFlatList(date, sem, activeSubjs);
   }
 
   let html = header + legend;
@@ -617,11 +903,12 @@ function renderToday() {
 
     if (typeof entry === 'string' && entry.startsWith('special:')) {
       html += `<div class="period-special">📋 ${entry.replace('special:', '')}</div>`;
-    } else if (Array.isArray(entry) && entry.length > 0) {
+    } else if (Array.isArray(entry)) {
       const items = entry
         .map(id => {
-          const subj = SUBJECTS.find(s => s.id === id);
+          const subj = activeSubjs.find(s => s.id === id);
           if (!subj) return null;
+          if (subj.type === 'fixed' && (sem === '前期' ? subj.mae : subj.ato) === 0) return null;
           const p = getProgress(subj);
           const state = getState(date, id, pd.id);
           const isDone = subj.type === 'annual' ? p.done : (sem === '前期' ? p.mae.rem === 0 : p.ato.rem === 0);
@@ -630,40 +917,42 @@ function renderToday() {
         })
         .filter(Boolean);
 
-      items.sort((a, b) => {
-        if (a.isDone !== b.isDone) return a.isDone ? 1 : -1;
-        return b.score - a.score;
-      });
-
-      const topScore = Math.max(...items.map(x => x.score));
-      html += `<div class="subject-list">`;
-      for (const { subj, p, state, isDone, score } of items) {
-        const isRec = !isDone && state !== 'actual' && topScore > 0 && score >= topScore * 0.85 && items.length > 1;
-        const semRem = subj.type === 'annual' ? p.remaining : (sem === '前期' ? p.mae.rem : p.ato.rem);
-        const disabledRow = isDone && !state;
-        const stateIcon = state === 'actual' ? '✓' : state === 'planned' ? '▷' : '';
-
-        html += `
-          <button class="subject-row${state ? ' '+state : ''}${disabledRow ? ' done-row' : ''}"
-            ${disabledRow ? 'disabled' : `onclick="tap('${date}','${subj.id}','${sem}',${pd.id})"`}>
-            <div class="s-left">
-              <span class="s-name">${subj.name}</span>
-              <div class="s-meta">
-                <span class="s-cat">${subj.cat}</span>
-                ${isRec ? `<span class="badge-rec">おすすめ</span>` : ''}
+      if (items.length === 0) {
+        html += `<div class="period-special" style="color:var(--gray-light)">— 対象科目なし</div>`;
+      } else {
+        items.sort((a, b) => {
+          if (a.isDone !== b.isDone) return a.isDone ? 1 : -1;
+          return b.score - a.score;
+        });
+        const topScore = Math.max(...items.map(x => x.score));
+        html += `<div class="subject-list">`;
+        for (const { subj, p, state, isDone, score } of items) {
+          const isRec = !isDone && state !== 'actual' && topScore > 0 && score >= topScore * 0.85 && items.length > 1;
+          const semRem = subj.type === 'annual' ? p.remaining : (sem === '前期' ? p.mae.rem : p.ato.rem);
+          const disabledRow = isDone && !state;
+          const stateIcon = state === 'actual' ? '✓' : state === 'planned' ? '▷' : '';
+          html += `
+            <button class="subject-row${state ? ' '+state : ''}${disabledRow ? ' done-row' : ''}"
+              ${disabledRow ? 'disabled' : `onclick="tap('${date}','${subj.id}','${sem}',${pd.id})"`}>
+              <div class="s-left">
+                <span class="s-name">${subj.name}</span>
+                <div class="s-meta">
+                  <span class="s-cat">${subj.cat}</span>
+                  ${isRec ? `<span class="badge-rec">おすすめ</span>` : ''}
+                </div>
+                ${isRec && semRem > 0 ? `<span class="rec-reason">全${subj.type==='annual'?subj.total:(sem==='前期'?subj.mae:subj.ato)}時間・あと${semRem}時間</span>` : ''}
               </div>
-              ${isRec && semRem > 0 ? `<span class="rec-reason">全${subj.type==='annual'?subj.total:(sem==='前期'?subj.mae:subj.ato)}時間・あと${semRem}時間</span>` : ''}
-            </div>
-            <div class="s-right">
-              ${disabledRow
-                ? `<span class="badge-done">取得済</span>`
-                : `<span class="s-rem${semRem===0?' done':''}">${semRem===0?'完了':`あと${semRem}h`}</span>`
-              }
-              <span class="state-circle${state?' '+state:''}">${stateIcon}</span>
-            </div>
-          </button>`;
+              <div class="s-right">
+                ${disabledRow
+                  ? `<span class="badge-done">取得済</span>`
+                  : `<span class="s-rem${semRem===0?' done':''}">${semRem===0?'完了':`あと${semRem}h`}</span>`
+                }
+                <span class="state-circle${state?' '+state:''}">${stateIcon}</span>
+              </div>
+            </button>`;
+        }
+        html += `</div>`;
       }
-      html += `</div>`;
     } else {
       html += `<div class="period-special" style="color:var(--gray-light)">— 対象科目なし</div>`;
     }
@@ -672,8 +961,8 @@ function renderToday() {
   return html;
 }
 
-function renderFlatList(date, sem) {
-  const subjects = SUBJECTS
+function renderFlatList(date, sem, activeSubjs) {
+  const subjects = activeSubjs
     .filter(s => s.type === 'annual' || (sem === '前期' ? s.mae > 0 : s.ato > 0))
     .map(s => {
       const p = getProgress(s);
@@ -713,7 +1002,8 @@ function renderFlatList(date, sem) {
 
 // ── Progress View ─────────────────────────────────────
 function renderProgress() {
-  const all = SUBJECTS.map(s => ({ ...s, p: getProgress(s) }));
+  const activeSubjs = getActiveSubjects();
+  const all = activeSubjs.map(s => ({ ...s, p: getProgress(s) }));
   const todo = all.filter(s => !s.p.done);
   const done = all.filter(s => s.p.done);
   const rem = totalRemaining();
@@ -746,9 +1036,10 @@ function renderProgress() {
 
 // ── Report View ───────────────────────────────────────
 function renderReports() {
+  const activeSubjs = getActiveSubjects();
   const today = todayStr();
   let totalReq = 0, totalPassed = 0, totalSubmitted = 0;
-  SUBJECTS.forEach(s => {
+  activeSubjs.forEach(s => {
     totalReq += s.reports;
     for (let i = 0; i < s.reports; i++) {
       const r = getReport(s.id, i);
@@ -766,7 +1057,7 @@ function renderReports() {
     </div>
     ${totalSubmitted > 0 ? `<div style="font-size:12px;color:var(--orange);margin-bottom:12px;padding-left:4px">${totalSubmitted}通 採点待ち</div>` : ''}`;
 
-  for (const subj of SUBJECTS) {
+  for (const subj of activeSubjs) {
     const total = subj.reports;
     const reports = Array.from({ length: total }, (_, i) => getReport(subj.id, i));
     const passedCount = reports.filter(r => r.status === 'passed').length;
@@ -774,7 +1065,6 @@ function renderReports() {
     const allDone = passedCount === total;
     const isExpanded = expandedSubjects.has(subj.id);
 
-    // 直近の期限を探す
     let nearestDeadline = null;
     for (const r of reports) {
       if (r.status !== 'passed' && r.deadline) {
@@ -782,7 +1072,6 @@ function renderReports() {
       }
     }
     const sev = nearestDeadline ? deadlineSeverity(nearestDeadline) : 'none';
-
     const pct = total > 0 ? (passedCount / total * 100) : 100;
     const barColor = allDone ? '#34C759' : '#007AFF';
 
@@ -812,10 +1101,7 @@ function renderReports() {
           <span class="r-num">第${i+1}回</span>
           <button class="r-status-btn ${rpt.status}" onclick="tapReport('${subj.id}',${i})">${statusLabel}</button>
           <div class="r-deadline-wrap">
-            ${rpt.deadline
-              ? `<span class="r-deadline-label${dlClass}">${dlSev==='past'?'⚠️ ':dlSev==='soon'?'! ':''}${formatDeadlineDate(rpt.deadline)}</span>`
-              : ''
-            }
+            ${rpt.deadline ? `<span class="r-deadline-label${dlClass}">${dlSev==='past'?'⚠️ ':dlSev==='soon'?'! ':''}${formatDeadlineDate(rpt.deadline)}</span>` : ''}
             <input class="r-date-input" type="date" value="${rpt.deadline || ''}"
               onchange="setReportDeadline('${subj.id}',${i},this.value)">
           </div>
@@ -839,6 +1125,50 @@ function toggleExpand(id) {
   render();
 }
 function tapReport(id, num) { cycleReportStatus(id, num); }
+
+// ── Setup Actions ─────────────────────────────────────
+function toggleEnroll(id) {
+  const s = ALL_SUBJECTS.find(x => x.id === id);
+  if (!s) return;
+  if (!studentConfig.subjects[id]) studentConfig.subjects[id] = {};
+  const wasEnrolled = !!studentConfig.subjects[id].enrolled;
+  if (wasEnrolled) {
+    studentConfig.subjects[id] = { enrolled: false };
+  } else {
+    if (totalEnrolledCredits() + (s.credits || 0) > CREDIT_MAX) return;
+    const sem = s.type === 'fixed' && s.semOpts.length > 1
+      ? (studentConfig.subjects[id]?.sem || s.semOpts[0])
+      : s.semOpts[0];
+    studentConfig.subjects[id] = { enrolled: true, ...(s.type === 'fixed' ? { sem } : {}) };
+  }
+  if (studentConfig.setup_done) saveConfig();
+  render();
+}
+
+function setSem(id, sem) {
+  if (!studentConfig.subjects[id]) studentConfig.subjects[id] = { enrolled: true };
+  studentConfig.subjects[id].sem = sem;
+  if (studentConfig.setup_done) saveConfig();
+  render();
+}
+
+function completeSetup() {
+  const count = Object.values(studentConfig.subjects).filter(v => v && v.enrolled).length;
+  if (count === 0) return;
+  studentConfig.setup_done = true;
+  saveConfig();
+  currentTab = 'today';
+  render();
+}
+
+function confirmReset() {
+  if (!confirm('出席記録とレポートデータを全て削除しますか？\nこの操作は取り消せません。')) return;
+  localStorage.removeItem(ATTEND_KEY);
+  localStorage.removeItem(REPORT_KEY);
+  records = [];
+  rptData = {};
+  render();
+}
 
 render();
 </script>
