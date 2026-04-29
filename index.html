@@ -1136,9 +1136,9 @@ function toggleEnroll(id) {
     studentConfig.subjects[id] = { enrolled: false };
   } else {
     if (totalEnrolledCredits() + (s.credits || 0) > CREDIT_MAX) return;
-    const sem = s.type === 'fixed' && s.semOpts.length > 1
+    const sem = s.type === 'fixed'
       ? (studentConfig.subjects[id]?.sem || s.semOpts[0])
-      : s.semOpts[0];
+      : null;
     studentConfig.subjects[id] = { enrolled: true, ...(s.type === 'fixed' ? { sem } : {}) };
   }
   if (studentConfig.setup_done) saveConfig();
