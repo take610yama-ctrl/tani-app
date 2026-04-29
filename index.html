@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="単位管理" />
+  <title>単位管理</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #007AFF; --green: #34C759; --orange: #FF9500; --red: #FF3B30;
+      --gray: #8E8E93; --gray-light: #C7C7CC;
+      --gray-bg: #F2F2F7; --card: #fff;
+      --text: #000; --sub: #6C6C70; --border: #E5E5EA;
+      --nav-h: 60px;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif; background: var(--gray-bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+    #app { max-width: 430px; margin: 0 auto; height: 100dvh; display: flex; flex-direction: column; }
+    #scroll { flex: 1; overflow-y: auto; padding: 12px 14px calc(var(--nav-h) + env(safe-area-inset-bottom) + 8px); }
+
+    /* ── Bottom Nav ── */
+    nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; height: calc(var(--nav-h) + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom); background: rgba(255,255,255,0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid var(--border); display: flex; }
+    .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border: none; background: transparent; cursor: pointer; color: var(--gray); font-size: 10px; font-weight: 500; padding-top: 6px; -webkit-tap-highlight-color: transparent; }
+    .nav-btn.active { color: var(--blue); }
+
+    /* ── Day Header ── */
+    .day-header { background: var(--card); border-radius: 16px; padding: 12px 10px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 6px; }
+    .arrow-btn { width: 34px; height: 34px; border-radius: 50%; border: none; background: var(--gray-bg); font-size: 22px; color: var(--blue); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .arrow-btn:disabled { color: var(--gray-light); cursor: default; }
+    .day-center { flex: 1; text-align: center; }
+    .day-year { font-size: 11px; color: var(--sub); }
+    .day-date { font-size: 18px; font-weight: 700; white-space: nowrap; }
+    .day-chips { display: flex; gap: 5px; justify-content: center; margin-top: 5px; flex-wrap: wrap; }
+    .chip { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+    .chip-blue { background: #E8F1FF; color: var(--blue); }
+    .chip-gray { background: var(--gray-bg); color: var(--gray); }
+    .chip-orange { background: #FFF3E0; color: var(--orange); }
+
+    /* ── Period Section ── */
+    .period-section { margin-bottom: 10px; }
+    .period-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; padding: 0 2px; }
+    .period-label { font-size: 13px; font-weight: 700; color: var(--text); }
+    .period-time { font-size: 12px; color: var(--sub); }
+    .period-special { background: var(--card); border-radius: 10px; padding: 12px 14px; font-size: 14px; color: var(--sub); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+
+    /* ── Subject Row ── */
+    .subject-list { display: flex; flex-direction: column; gap: 7px; }
+    .subject-row { display: flex; align-items: center; background: var(--card); border-radius: 12px; padding: 11px 13px; border: 2px solid transparent; cursor: pointer; width: 100%; text-align: left; box-shadow: 0 1px 3px rgba(0,0,0,0.06); transition: border-color 0.15s, background 0.15s; -webkit-tap-highlight-color: transparent; min-height: 56px; }
+    .subject-row.planned  { border-color: var(--orange); background: #FFFBF5; }
+    .subject-row.actual   { border-color: var(--blue);   background: #EFF5FF; }
+    .subject-row.done-row { background: var(--gray-bg); opacity: 0.5; cursor: default; }
+    .s-left { flex: 1; min-width: 0; }
+    .s-name { display: block; font-size: 15px; font-weight: 600; line-height: 1.3; }
+    .s-meta { display: flex; align-items: center; gap: 6px; margin-top: 3px; flex-wrap: wrap; }
+    .s-cat { font-size: 12px; color: var(--sub); }
+    .s-right { display: flex; align-items: center; gap: 9px; flex-shrink: 0; margin-left: 10px; }
+    .s-rem { font-size: 13px; color: var(--blue); font-weight: 500; white-space: nowrap; }
+    .s-rem.done { color: var(--green); }
+    .badge-done    { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: #E5E5EA; color: var(--gray); white-space: nowrap; }
+    .badge-rec     { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: #FFF3E0; color: #E65100; white-space: nowrap; }
+    .rec-reason    { font-size: 11px; color: #E65100; }
+    .state-circle { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--gray-light); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; transition: all 0.15s; }
+    .state-circle.planned { background: #FFF3E0; border-color: var(--orange); color: var(--orange); }
+    .state-circle.actual  { background: var(--blue);   border-color: var(--blue);   color: #fff; font-size: 14px; }
+    .no-tt-note { font-size: 12px; color: var(--sub); text-align: center; padding: 8px 0 4px; }
+
+    /* ── Progress View ── */
+    .progress-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
+    .progress-title { font-size: 22px; font-weight: 700; }
+    .total-rem { font-size: 13px; font-weight: 600; color: var(--blue); }
+    .total-done { font-size: 13px; font-weight: 600; color: var(--green); }
+    .section-head { font-size: 12px; font-weight: 600; color: var(--sub); letter-spacing: 0.5px; margin-bottom: 8px; padding-left: 4px; }
+    .progress-section { margin-bottom: 24px; }
+    .p-card { background: var(--card); border-radius: 14px; padding: 14px 16px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+    .p-card.grayed { opacity: 0.45; }
+    .pc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .pc-name { font-size: 15px; font-weight: 600; }
+    .pc-cat { font-size: 12px; color: var(--sub); margin-top: 2px; }
+    .pc-nums { display: flex; justify-content: space-between; font-size: 13px; color: var(--sub); margin-bottom: 6px; }
+    .pc-rem { color: var(--blue); font-weight: 600; }
+    .bar-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 2px; }
+    .bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+    .sem-rows { display: flex; flex-direction: column; gap: 7px; }
+    .sem-row { display: flex; align-items: center; gap: 8px; }
+    .sem-label { font-size: 12px; font-weight: 600; color: var(--sub); width: 28px; flex-shrink: 0; }
+    .sem-bar { flex: 1; }
+    .sem-count { font-size: 12px; font-weight: 600; color: var(--blue); width: 40px; text-align: right; flex-shrink: 0; }
+    .sem-count.ok { color: var(--green); }
+
+    /* ── Report View ── */
+    .r-card { background: var(--card); border-radius: 14px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); overflow: hidden; }
+    .r-card-header { display: flex; align-items: center; padding: 13px 14px; cursor: pointer; gap: 10px; -webkit-tap-highlight-color: transparent; }
+    .r-chevron { font-size: 11px; color: var(--sub); transition: transform 0.2s; flex-shrink: 0; line-height: 1; }
+    .r-chevron.open { transform: rotate(90deg); }
+    .r-card-info { flex: 1; min-width: 0; }
+    .r-card-name { font-size: 15px; font-weight: 600; }
+    .r-card-cat { font-size: 12px; color: var(--sub); margin-top: 2px; }
+    .r-card-right { flex-shrink: 0; text-align: right; }
+    .r-card-count { font-size: 13px; font-weight: 600; color: var(--blue); white-space: nowrap; }
+    .r-card-count.done { color: var(--green); }
+    .r-pending { font-size: 11px; color: var(--orange); margin-top: 2px; }
+    .r-minibar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 5px; width: 70px; }
+    .r-minibar-fill { height: 100%; border-radius: 2px; }
+
+    .r-reports { border-top: 1px solid var(--border); }
+    .r-row { display: flex; align-items: center; padding: 9px 14px; gap: 8px; border-bottom: 1px solid var(--gray-bg); }
+    .r-row:last-child { border-bottom: none; }
+    .r-num { font-size: 13px; font-weight: 600; color: var(--sub); width: 38px; flex-shrink: 0; }
+    .r-status-btn { padding: 4px 10px; border-radius: 20px; border: none; cursor: pointer; font-size: 12px; font-weight: 600; flex-shrink: 0; -webkit-tap-highlight-color: transparent; white-space: nowrap; }
+    .r-status-btn.none      { background: var(--gray-bg); color: var(--sub); }
+    .r-status-btn.submitted { background: #FFF3E0;        color: var(--orange); }
+    .r-status-btn.passed    { background: #E8F8EE;        color: var(--green); }
+    .r-deadline-wrap { flex: 1; display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+    .r-deadline-label { font-size: 11px; color: var(--sub); white-space: nowrap; }
+    .r-deadline-label.soon { color: var(--orange); font-weight: 600; }
+    .r-deadline-label.past { color: var(--red); font-weight: 600; }
+    .r-date-input { border: 1px solid var(--border); border-radius: 8px; background: var(--gray-bg); font-size: 12px; color: var(--sub); font-family: inherit; cursor: pointer; padding: 3px 7px; max-width: 130px; }
+    .r-date-input:focus { outline: none; border-color: var(--blue); color: var(--blue); }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div id="scroll"></div>
+  <nav>
+    <button class="nav-btn active" id="nav-today" onclick="showTab('today')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M3 9h18" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      出席
+    </button>
+    <button class="nav-btn" id="nav-progress" onclick="showTab('progress')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <rect x="3" y="13" width="4" height="8" rx="1" fill="currentColor" opacity="0.4"/>
+        <rect x="10" y="8" width="4" height="13" rx="1" fill="currentColor" opacity="0.7"/>
+        <rect x="17" y="3" width="4" height="18" rx="1" fill="currentColor"/>
+      </svg>
+      進捗
+    </button>
+    <button class="nav-btn" id="nav-report" onclick="showTab('report')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      レポート
+    </button>
+  </nav>
+</div>
+
+<script>
+// ── 科目マスタ ──────────────────────────────────────────
+// reports = レポート規定通数, mae/ato or total = スクーリング規定時間数
+const SUBJECTS = [
+  { id: 'gendai_kokugo', name: '現代の国語',              cat: '国語',     type: 'fixed',  mae: 2,  ato: 0,  reports: 6  },
+  { id: 'gengo_bunka',   name: '言語文化',                 cat: '国語',     type: 'fixed',  mae: 0,  ato: 2,  reports: 6  },
+  { id: 'chiri_sogo',    name: '地理総合',                 cat: '地歴',     type: 'fixed',  mae: 2,  ato: 0,  reports: 6  },
+  { id: 'rekishi_sogo',  name: '歴史総合',                 cat: '地歴',     type: 'fixed',  mae: 0,  ato: 2,  reports: 6  },
+  { id: 'kokyou',        name: '公共',                     cat: '公民',     type: 'fixed',  mae: 2,  ato: 0,  reports: 6  },
+  { id: 'sugaku1',       name: '数学Ⅰ',                   cat: '数学',     type: 'annual', total: 4,          reports: 12 },
+  { id: 'kagaku',        name: '科学と人間生活',           cat: '理科',     type: 'annual', total: 8,          reports: 6  },
+  { id: 'taiiku',        name: '体育',                     cat: '体育',     type: 'fixed',  mae: 10, ato: 0,  reports: 2  },
+  { id: 'hoken',         name: '保健',                     cat: '保健体育', type: 'fixed',  mae: 2,  ato: 0,  reports: 6  },
+  { id: 'shodo1',        name: '書道Ⅰ',                   cat: '芸術',     type: 'annual', total: 8,          reports: 6  },
+  { id: 'eigo1',         name: '英語コミュニケーションⅠ', cat: '外国語',   type: 'annual', total: 16,         reports: 12 },
+  { id: 'katei',         name: '家庭基礎',                 cat: '家庭',     type: 'fixed',  mae: 0,  ato: 4,  reports: 4  },
+  { id: 'joho1',         name: '情報Ⅰ',                   cat: '情報',     type: 'fixed',  mae: 4,  ato: 0,  reports: 4  },
+];
+
+// ── 登校日リスト ──────────────────────────────────────
+const SCHOOL_DAYS = [
+  { date: '2026-04-25', sem: '前期', week: 1 },
+  { date: '2026-05-02', sem: '前期', week: 2 },
+  { date: '2026-05-09', sem: '前期', week: 3 },
+  { date: '2026-05-16', sem: '前期', week: 4 },
+  { date: '2026-05-23', sem: '前期', week: 5 },
+  { date: '2026-05-30', sem: '前期', week: 6 },
+  { date: '2026-06-06', sem: '前期', week: 7 },
+  { date: '2026-06-13', sem: '前期', week: 8 },
+  { date: '2026-06-20', sem: '前期', week: 9 },
+  { date: '2026-06-27', sem: '前期', week: 10 },
+  { date: '2026-07-04', sem: '前期', week: 11 },
+  { date: '2026-07-11', sem: '前期', week: 12 },
+  { date: '2026-07-18', sem: '前期', week: 13 },
+  { date: '2026-07-31', sem: '前期', week: 14 },
+  { date: '2026-09-05', sem: '前期', week: 15 },
+  { date: '2026-09-12', sem: '前期', week: 16 },
+  { date: '2026-10-03', sem: '後期', week: 1 },
+  { date: '2026-10-10', sem: '後期', week: 2 },
+  { date: '2026-10-17', sem: '後期', week: 3 },
+  { date: '2026-10-24', sem: '後期', week: 4 },
+  { date: '2026-10-31', sem: '後期', week: 5 },
+  { date: '2026-11-07', sem: '後期', week: 6 },
+  { date: '2026-11-14', sem: '後期', week: 7 },
+  { date: '2026-11-21', sem: '後期', week: 8 },
+  { date: '2026-11-28', sem: '後期', week: 9 },
+  { date: '2026-12-05', sem: '後期', week: 10 },
+  { date: '2026-12-12', sem: '後期', week: 11 },
+  { date: '2026-12-19', sem: '後期', week: 12 },
+  { date: '2027-01-09', sem: '後期', week: 13 },
+  { date: '2027-01-16', sem: '後期', week: 14 },
+  { date: '2027-01-23', sem: '後期', week: 15 },
+];
+
+// ── 時間割 ────────────────────────────────────────────
+const PERIODS_DEF = [
+  { id: 1,  label: '1時限',    time: '8:40〜9:30'   },
+  { id: 2,  label: '2時限',    time: '9:40〜10:30'  },
+  { id: 34, label: '3・4時限', time: '10:40〜12:20' },
+  { id: 56, label: '5・6時限', time: '13:10〜14:50' },
+  { id: 7,  label: '7時限',    time: '15:00〜15:50' },
+];
+
+const TIMETABLE = {
+  '2026-04-25': {
+    1:  ['sugaku1', 'hoken'],
+    2:  ['chiri_sogo', 'kokyou', 'kagaku'],
+    34: 'special:LHR・避難訓練・全校集会',
+    56: ['taiiku', 'shodo1', 'eigo1'],
+    7:  ['gendai_kokugo', 'kagaku'],
+  },
+  '2026-05-02': {
+    1:  ['sugaku1', 'hoken'],
+    2:  ['chiri_sogo', 'kagaku'],
+    34: ['eigo1', 'joho1'],
+    56: ['taiiku', 'shodo1', 'eigo1'],
+    7:  ['gendai_kokugo'],
+  },
+  '2026-05-09': {
+    1:  ['sugaku1', 'hoken'],
+    2:  ['chiri_sogo', 'kokyou', 'kagaku'],
+    34: ['eigo1', 'joho1'],
+    56: ['taiiku', 'shodo1', 'eigo1'],
+    7:  ['gendai_kokugo', 'kagaku'],
+  },
+  '2026-05-16': {
+    1:  ['sugaku1', 'hoken'],
+    2:  ['chiri_sogo', 'kokyou', 'kagaku'],
+    34: ['eigo1', 'joho1'],
+    56: ['taiiku', 'shodo1', 'eigo1'],
+    7:  ['gendai_kokugo', 'kagaku'],
+  },
+  '2026-05-23': {
+    1:  ['sugaku1', 'hoken'],
+    2:  ['chiri_sogo', 'kokyou'],
+    34: ['eigo1', 'joho1'],
+    56: ['taiiku', 'shodo1', 'eigo1'],
+    7:  ['gendai_kokugo'],
+  },
+  '2026-05-30': {
+    1:  ['sugaku1', 'hoken'],
+    2:  ['chiri_sogo', 'kagaku'],
+    34: ['eigo1', 'joho1'],
+    56: ['taiiku', 'shodo1', 'eigo1'],
+    7:  ['gendai_kokugo'],
+  },
+  '2026-06-06': {
+    1:  ['sugaku1', 'hoken'],
+    2:  ['kokyou', 'kagaku'],
+    34: ['eigo1', 'joho1'],
+    56: ['taiiku', 'shodo1', 'eigo1'],
+    7:  ['gendai_kokugo', 'kagaku'],
+  },
+  '2026-06-13': {
+    1:  ['sugaku1', 'hoken'],
+    2:  ['chiri_sogo', 'kokyou'],
+    34: ['eigo1', 'joho1'],
+    56: ['taiiku', 'shodo1', 'eigo1'],
+    7:  ['gendai_kokugo'],
+  },
+  '2026-06-20': {
+    1:  ['sugaku1', 'hoken'],
+    2:  ['chiri_sogo', 'kagaku'],
+    34: ['eigo1', 'joho1'],
+    56: ['taiiku', 'shodo1', 'eigo1'],
+    7:  ['gendai_kokugo', 'kagaku'],
+  },
+  '2026-06-27': {
+    1:  ['hoken'],
+    2:  ['kokyou', 'kagaku'],
+    34: ['eigo1', 'joho1'],
+    56: ['taiiku', 'shodo1', 'eigo1'],
+    7:  ['gendai_kokugo', 'kagaku'],
+  },
+  '2026-07-04': {
+    1:  ['sugaku1', 'hoken'],
+    2:  ['chiri_sogo', 'kokyou'],
+    34: ['eigo1', 'joho1'],
+    56: ['taiiku', 'shodo1', 'eigo1'],
+    7:  ['gendai_kokugo'],
+  },
+  '2026-07-11': {
+    1:  ['sugaku1'],
+    2:  ['chiri_sogo', 'kagaku'],
+    34: ['eigo1', 'joho1'],
+    56: ['taiiku', 'shodo1', 'eigo1'],
+    7:  ['gendai_kokugo'],
+  },
+  '2026-07-18': {
+    1:  ['sugaku1', 'hoken'],
+    2:  ['kokyou', 'kagaku'],
+    34: ['eigo1'],
+    56: ['taiiku', 'shodo1', 'eigo1'],
+    7:  ['gendai_kokugo'],
+  },
+  '2026-07-31': {
+    1:  ['sugaku1', 'hoken'],
+    2:  ['chiri_sogo', 'kokyou'],
+    34: ['eigo1'],
+    56: ['taiiku', 'shodo1', 'eigo1'],
+    7:  ['gendai_kokugo'],
+  },
+  '2026-09-05': {
+    1:  ['sugaku1', 'hoken'],
+    2:  ['chiri_sogo', 'kokyou', 'kagaku'],
+    34: ['eigo1', 'joho1'],
+    56: ['taiiku', 'shodo1', 'eigo1'],
+    7:  ['gendai_kokugo'],
+  },
+  '2026-09-12': {
+    1:  ['sugaku1', 'hoken'],
+    2:  ['chiri_sogo', 'kagaku'],
+    34: ['eigo1', 'joho1'],
+    56: ['taiiku', 'shodo1', 'eigo1'],
+    7:  ['gendai_kokugo'],
+  },
+  '2026-10-03': {
+    1:  ['sugaku1', 'rekishi_sogo'],
+    2:  ['gengo_bunka', 'kagaku'],
+    34: ['eigo1', 'katei'],
+    56: ['shodo1', 'eigo1'],
+    7:  ['kagaku'],
+  },
+  '2026-10-10': {
+    1:  ['sugaku1', 'rekishi_sogo'],
+    2:  ['gengo_bunka', 'kagaku'],
+    34: ['eigo1', 'katei'],
+    56: ['shodo1', 'eigo1'],
+    7:  ['kagaku'],
+  },
+  '2026-10-17': {
+    1:  ['sugaku1', 'rekishi_sogo'],
+    2:  ['gengo_bunka'],
+    34: ['eigo1', 'katei'],
+    56: ['shodo1', 'eigo1'],
+    7:  ['kagaku'],
+  },
+  '2026-10-24': {
+    1:  ['sugaku1', 'rekishi_sogo'],
+    2:  ['gengo_bunka', 'kagaku'],
+    34: ['eigo1', 'katei'],
+    56: ['shodo1', 'eigo1'],
+    7:  [],
+  },
+  '2026-10-31': {
+    1:  ['sugaku1', 'rekishi_sogo'],
+    2:  ['gengo_bunka'],
+    34: ['eigo1', 'katei'],
+    56: ['shodo1', 'eigo1'],
+    7:  ['kagaku'],
+  },
+  '2026-11-07': {
+    1:  ['sugaku1', 'rekishi_sogo'],
+    2:  ['gengo_bunka', 'kagaku'],
+    34: ['eigo1', 'katei'],
+    56: ['shodo1', 'eigo1'],
+    7:  [],
+  },
+  '2026-11-14': {
+    1:  ['sugaku1', 'rekishi_sogo'],
+    2:  ['gengo_bunka'],
+    34: ['eigo1', 'katei'],
+    56: ['shodo1', 'eigo1'],
+    7:  ['kagaku'],
+  },
+  '2026-11-21': {
+    1:  ['sugaku1', 'rekishi_sogo'],
+    2:  ['gengo_bunka', 'kagaku'],
+    34: ['eigo1', 'katei'],
+    56: ['shodo1', 'eigo1'],
+    7:  [],
+  },
+  '2026-11-28': {
+    1:  ['sugaku1', 'rekishi_sogo'],
+    2:  ['gengo_bunka'],
+    34: ['eigo1', 'katei'],
+    56: ['shodo1', 'eigo1'],
+    7:  ['kagaku'],
+  },
+  '2026-12-05': {
+    1:  ['sugaku1', 'rekishi_sogo'],
+    2:  ['gengo_bunka', 'kagaku'],
+    34: ['eigo1', 'katei'],
+    56: ['shodo1', 'eigo1'],
+    7:  [],
+  },
+  '2026-12-12': {
+    1:  ['rekishi_sogo'],
+    2:  ['gengo_bunka'],
+    34: ['eigo1', 'katei'],
+    56: ['shodo1', 'eigo1'],
+    7:  ['kagaku'],
+  },
+  '2026-12-19': {
+    1:  ['sugaku1', 'rekishi_sogo'],
+    2:  ['gengo_bunka', 'kagaku'],
+    34: ['eigo1', 'katei'],
+    56: ['shodo1', 'eigo1'],
+    7:  [],
+  },
+  '2027-01-09': {
+    1:  ['sugaku1', 'rekishi_sogo'],
+    2:  ['gengo_bunka'],
+    34: ['eigo1', 'katei'],
+    56: ['shodo1', 'eigo1'],
+    7:  ['kagaku'],
+  },
+  '2027-01-16': {
+    1:  ['sugaku1', 'rekishi_sogo'],
+    2:  ['gengo_bunka', 'kagaku'],
+    34: ['eigo1', 'katei'],
+    56: ['shodo1', 'eigo1'],
+    7:  [],
+  },
+  '2027-01-23': {
+    1:  ['rekishi_sogo'],
+    2:  ['gengo_bunka'],
+    34: ['eigo1', 'katei'],
+    56: ['shodo1', 'eigo1'],
+    7:  ['kagaku'],
+  },
+};
+
+// ── 出席 Storage ──────────────────────────────────────
+// v3: record key は (date, id, periodId) の組み合わせ
+const ATTEND_KEY = 'tani_v3';
+function loadAttend() {
+  try { return JSON.parse(localStorage.getItem(ATTEND_KEY) || '[]'); } catch { return []; }
+}
+function saveAttend() { localStorage.setItem(ATTEND_KEY, JSON.stringify(records)); }
+let records = loadAttend();
+
+// ── レポート Storage ──────────────────────────────────
+const REPORT_KEY = 'tani_reports_v1';
+function loadReports() {
+  try { return JSON.parse(localStorage.getItem(REPORT_KEY) || '{}'); } catch { return {}; }
+}
+function saveReportData() { localStorage.setItem(REPORT_KEY, JSON.stringify(rptData)); }
+let rptData = loadReports();
+
+// ── 出席 状態管理 ─────────────────────────────────────
+// キー: (date, id, periodId)
+// none → planned(予定) → actual(実績) → none
+const DOUBLE_PERIODS = [34, 56];
+
+function getState(date, id, periodId) {
+  const r = records.find(r => r.date === date && r.id === id && r.periodId === periodId);
+  return r ? r.type : null;
+}
+function cycleState(date, id, sem, periodId) {
+  const count = DOUBLE_PERIODS.includes(periodId) ? 2 : 1;
+  const cur = getState(date, id, periodId);
+  const next = cur === null ? 'planned' : cur === 'planned' ? 'actual' : null;
+  records = records.filter(r => !(r.date === date && r.id === id && r.periodId === periodId));
+  if (next !== null) records.push({ date, id, periodId, sem, type: next, count });
+  saveAttend();
+}
+
+// ── 進捗計算 ──────────────────────────────────────────
+function sumCount(rs) { return rs.reduce((s, r) => s + (r.count || 1), 0); }
+function getProgress(subj) {
+  if (subj.type === 'annual') {
+    const attended = sumCount(records.filter(r => r.id === subj.id && r.type === 'actual'));
+    const remaining = Math.max(0, subj.total - attended);
+    return { type: 'annual', total: subj.total, attended, remaining, done: remaining === 0 };
+  }
+  const maeCount = sumCount(records.filter(r => r.id === subj.id && r.sem === '前期' && r.type === 'actual'));
+  const atoCount = sumCount(records.filter(r => r.id === subj.id && r.sem === '後期' && r.type === 'actual'));
+  const maeRem = Math.max(0, subj.mae - maeCount);
+  const atoRem = Math.max(0, subj.ato - atoCount);
+  return {
+    type: 'fixed',
+    mae: { req: subj.mae, attended: maeCount, rem: maeRem },
+    ato: { req: subj.ato, attended: atoCount, rem: atoRem },
+    done: maeRem === 0 && atoRem === 0,
+  };
+}
+function totalRemaining() {
+  return SUBJECTS.reduce((s, subj) => {
+    const p = getProgress(subj);
+    return s + (p.type === 'annual' ? p.remaining : p.mae.rem + p.ato.rem);
+  }, 0);
+}
+
+// ── 優先度スコア ──────────────────────────────────────
+function priorityScore(subj, sem, p) {
+  if (p.done) return 0;
+  const rem = subj.type === 'annual' ? p.remaining : (sem === '前期' ? p.mae.rem : p.ato.rem);
+  if (rem === 0) return 0;
+  const attended = subj.type === 'annual' ? p.attended : (sem === '前期' ? p.mae.attended : p.ato.attended);
+  return rem * (subj.type === 'annual' ? 1.5 : 1.0) * (attended === 0 ? 1.2 : 1.0);
+}
+
+// ── レポート管理 ──────────────────────────────────────
+// status: 'none' | 'submitted' | 'passed'
+function getReport(id, num) {
+  return (rptData[id] && rptData[id][num]) || { status: 'none', deadline: null };
+}
+function cycleReportStatus(id, num) {
+  if (!rptData[id]) rptData[id] = [];
+  const cur = getReport(id, num).status;
+  const next = cur === 'none' ? 'submitted' : cur === 'submitted' ? 'passed' : 'none';
+  rptData[id][num] = { ...getReport(id, num), status: next };
+  saveReportData();
+  render();
+}
+function setReportDeadline(id, num, value) {
+  if (!rptData[id]) rptData[id] = [];
+  rptData[id][num] = { ...getReport(id, num), deadline: value || null };
+  saveReportData();
+}
+
+// ── Helpers ───────────────────────────────────────────
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function defaultDayIndex() {
+  const today = todayStr();
+  let best = 0;
+  for (let i = 0; i < SCHOOL_DAYS.length; i++) {
+    if (SCHOOL_DAYS[i].date <= today) best = i;
+    else break;
+  }
+  return best;
+}
+function formatDate(str) {
+  const [y, m, d] = str.split('-').map(Number);
+  const wd = ['日','月','火','水','木','金','土'][new Date(y, m-1, d).getDay()];
+  return `${m}月${d}日（${wd}）`;
+}
+function formatYear(str) { return str.split('-')[0] + '年'; }
+function formatDeadlineDate(str) {
+  const [, m, d] = str.split('-').map(Number);
+  return `${m}/${d}`;
+}
+function bar(attended, total, color) {
+  const pct = total > 0 ? Math.min(100, attended / total * 100) : 100;
+  return `<div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>`;
+}
+function deadlineSeverity(deadline) {
+  if (!deadline) return 'none';
+  const today = todayStr();
+  if (deadline < today) return 'past';
+  const diff = (new Date(deadline) - new Date(today)) / 86400000;
+  if (diff <= 7) return 'soon';
+  return 'ok';
+}
+
+// ── State ─────────────────────────────────────────────
+let currentTab = 'today';
+let dayIndex = defaultDayIndex();
+let expandedSubjects = new Set();
+
+// ── Render ────────────────────────────────────────────
+function render() {
+  const el = document.getElementById('scroll');
+  if (currentTab === 'today')    el.innerHTML = renderToday();
+  else if (currentTab === 'progress') el.innerHTML = renderProgress();
+  else                           el.innerHTML = renderReports();
+  document.getElementById('nav-today').classList.toggle('active', currentTab === 'today');
+  document.getElementById('nav-progress').classList.toggle('active', currentTab === 'progress');
+  document.getElementById('nav-report').classList.toggle('active', currentTab === 'report');
+}
+
+// ── Today View ────────────────────────────────────────
+function renderToday() {
+  const day = SCHOOL_DAYS[dayIndex];
+  const { date, sem, week } = day;
+  const today = todayStr();
+  const isFuture = date > today;
+  const tt = TIMETABLE[date];
+
+  const header = `
+    <div class="day-header">
+      <button class="arrow-btn" ${dayIndex === 0 ? 'disabled' : 'onclick="prevDay()"'}>‹</button>
+      <div class="day-center">
+        <div class="day-year">${formatYear(date)}</div>
+        <div class="day-date">${formatDate(date)}</div>
+        <div class="day-chips">
+          <span class="chip chip-blue">${sem}</span>
+          <span class="chip chip-gray">第${week}週</span>
+          ${isFuture ? '<span class="chip chip-orange">予定</span>' : ''}
+        </div>
+      </div>
+      <button class="arrow-btn" ${dayIndex === SCHOOL_DAYS.length-1 ? 'disabled' : 'onclick="nextDay()"'}>›</button>
+    </div>`;
+
+  const legend = `<div style="display:flex;gap:12px;padding:0 2px 8px;font-size:12px;color:var(--sub)">
+    <span>○ 未 &nbsp;／&nbsp; <span style="color:var(--orange)">▷ 予定</span> &nbsp;／&nbsp; <span style="color:var(--blue)">✓ 実績</span></span>
+  </div>`;
+
+  if (!tt) {
+    return header + `<p class="no-tt-note">※この日の時間割データは未登録です</p>` + legend + renderFlatList(date, sem);
+  }
+
+  let html = header + legend;
+
+  for (const pd of PERIODS_DEF) {
+    const entry = tt[pd.id];
+    if (entry === undefined) continue;
+
+    html += `<div class="period-section">`;
+    html += `<div class="period-header"><span class="period-label">${pd.label}</span><span class="period-time">${pd.time}</span></div>`;
+
+    if (typeof entry === 'string' && entry.startsWith('special:')) {
+      html += `<div class="period-special">📋 ${entry.replace('special:', '')}</div>`;
+    } else if (Array.isArray(entry) && entry.length > 0) {
+      const items = entry
+        .map(id => {
+          const subj = SUBJECTS.find(s => s.id === id);
+          if (!subj) return null;
+          const p = getProgress(subj);
+          const state = getState(date, id, pd.id);
+          const isDone = subj.type === 'annual' ? p.done : (sem === '前期' ? p.mae.rem === 0 : p.ato.rem === 0);
+          const score = (!isDone && state !== 'actual') ? priorityScore(subj, sem, p) : 0;
+          return { subj, p, state, isDone, score };
+        })
+        .filter(Boolean);
+
+      items.sort((a, b) => {
+        if (a.isDone !== b.isDone) return a.isDone ? 1 : -1;
+        return b.score - a.score;
+      });
+
+      const topScore = Math.max(...items.map(x => x.score));
+      html += `<div class="subject-list">`;
+      for (const { subj, p, state, isDone, score } of items) {
+        const isRec = !isDone && state !== 'actual' && topScore > 0 && score >= topScore * 0.85 && items.length > 1;
+        const semRem = subj.type === 'annual' ? p.remaining : (sem === '前期' ? p.mae.rem : p.ato.rem);
+        const disabledRow = isDone && !state;
+        const stateIcon = state === 'actual' ? '✓' : state === 'planned' ? '▷' : '';
+
+        html += `
+          <button class="subject-row${state ? ' '+state : ''}${disabledRow ? ' done-row' : ''}"
+            ${disabledRow ? 'disabled' : `onclick="tap('${date}','${subj.id}','${sem}',${pd.id})"`}>
+            <div class="s-left">
+              <span class="s-name">${subj.name}</span>
+              <div class="s-meta">
+                <span class="s-cat">${subj.cat}</span>
+                ${isRec ? `<span class="badge-rec">おすすめ</span>` : ''}
+              </div>
+              ${isRec && semRem > 0 ? `<span class="rec-reason">全${subj.type==='annual'?subj.total:(sem==='前期'?subj.mae:subj.ato)}時間・あと${semRem}時間</span>` : ''}
+            </div>
+            <div class="s-right">
+              ${disabledRow
+                ? `<span class="badge-done">取得済</span>`
+                : `<span class="s-rem${semRem===0?' done':''}">${semRem===0?'完了':`あと${semRem}h`}</span>`
+              }
+              <span class="state-circle${state?' '+state:''}">${stateIcon}</span>
+            </div>
+          </button>`;
+      }
+      html += `</div>`;
+    } else {
+      html += `<div class="period-special" style="color:var(--gray-light)">— 対象科目なし</div>`;
+    }
+    html += `</div>`;
+  }
+  return html;
+}
+
+function renderFlatList(date, sem) {
+  const subjects = SUBJECTS
+    .filter(s => s.type === 'annual' || (sem === '前期' ? s.mae > 0 : s.ato > 0))
+    .map(s => {
+      const p = getProgress(s);
+      const state = getState(date, s.id, 0);
+      const isDone = s.type === 'annual' ? p.done : (sem === '前期' ? p.mae.rem === 0 : p.ato.rem === 0);
+      const score = (!isDone && state !== 'actual') ? priorityScore(s, sem, p) : 0;
+      return { s, p, state, isDone, score };
+    });
+
+  subjects.sort((a, b) => {
+    if (a.isDone !== b.isDone) return a.isDone ? 1 : -1;
+    return b.score - a.score;
+  });
+  const topScore = Math.max(...subjects.map(x => x.score));
+
+  let html = `<div class="subject-list">`;
+  for (const { s, p, state, isDone, score } of subjects) {
+    const isRec = !isDone && state !== 'actual' && topScore > 0 && score >= topScore * 0.85;
+    const semRem = s.type === 'annual' ? p.remaining : (sem === '前期' ? p.mae.rem : p.ato.rem);
+    const disabledRow = isDone && !state;
+    const stateIcon = state === 'actual' ? '✓' : state === 'planned' ? '▷' : '';
+    html += `
+      <button class="subject-row${state?' '+state:''}${disabledRow?' done-row':''}"
+        ${disabledRow ? 'disabled' : `onclick="tap('${date}','${s.id}','${sem}',0)"`}>
+        <div class="s-left">
+          <span class="s-name">${s.name}</span>
+          <div class="s-meta"><span class="s-cat">${s.cat}</span>${isRec?`<span class="badge-rec">おすすめ</span>`:''}</div>
+        </div>
+        <div class="s-right">
+          ${disabledRow ? `<span class="badge-done">取得済</span>` : `<span class="s-rem${semRem===0?' done':''}">${semRem===0?'完了':`あと${semRem}h`}</span>`}
+          <span class="state-circle${state?' '+state:''}">${stateIcon}</span>
+        </div>
+      </button>`;
+  }
+  return html + `</div>`;
+}
+
+// ── Progress View ─────────────────────────────────────
+function renderProgress() {
+  const all = SUBJECTS.map(s => ({ ...s, p: getProgress(s) }));
+  const todo = all.filter(s => !s.p.done);
+  const done = all.filter(s => s.p.done);
+  const rem = totalRemaining();
+
+  const cardHTML = (s, grayed) => {
+    const p = s.p;
+    let body = '';
+    if (s.type === 'annual') {
+      body = `<div class="pc-nums"><span>${p.attended} / ${p.total} 時間</span>${!grayed?`<span class="pc-rem">あと ${p.remaining} 時間</span>`:''}</div>${bar(p.attended, p.total, grayed?'#C7C7CC':'#007AFF')}`;
+    } else {
+      const semRows = [['前期', p.mae], ['後期', p.ato]].filter(([,d]) => d.req > 0).map(([lbl, data]) => {
+        const ok = data.rem === 0;
+        return `<div class="sem-row"><span class="sem-label">${lbl}</span><div class="sem-bar">${bar(data.attended, data.req, ok?'#34C759':'#007AFF')}</div><span class="sem-count${ok?' ok':''}">${ok?'✓':`あと${data.rem}h`}</span></div>`;
+      }).join('');
+      body = `<div class="sem-rows">${semRows}</div>`;
+    }
+    return `<div class="p-card${grayed?' grayed':''}">
+      <div class="pc-top"><div><div class="pc-name">${s.name}</div><div class="pc-cat">${s.cat}</div></div>${grayed?'<span class="badge-done">✓ 完了</span>':''}</div>
+      ${body}</div>`;
+  };
+
+  return `
+    <div class="progress-header">
+      <span class="progress-title">スクーリング進捗</span>
+      ${rem===0?'<span class="total-done">全科目完了！</span>':`<span class="total-rem">残り ${rem} 時間</span>`}
+    </div>
+    ${todo.length?`<div class="progress-section"><div class="section-head">取得中（${todo.length}科目）</div>${todo.map(s=>cardHTML(s,false)).join('')}</div>`:''}
+    ${done.length?`<div class="progress-section"><div class="section-head">完了（${done.length}科目）</div>${done.map(s=>cardHTML(s,true)).join('')}</div>`:''}`;
+}
+
+// ── Report View ───────────────────────────────────────
+function renderReports() {
+  const today = todayStr();
+  let totalReq = 0, totalPassed = 0, totalSubmitted = 0;
+  SUBJECTS.forEach(s => {
+    totalReq += s.reports;
+    for (let i = 0; i < s.reports; i++) {
+      const r = getReport(s.id, i);
+      if (r.status === 'passed') totalPassed++;
+      else if (r.status === 'submitted') totalSubmitted++;
+    }
+  });
+
+  let html = `
+    <div class="progress-header">
+      <span class="progress-title">レポート</span>
+      <span style="font-size:13px;font-weight:600;color:${totalPassed===totalReq?'var(--green)':'var(--blue)'}">
+        ${totalPassed===totalReq ? '全部合格！' : `${totalPassed} / ${totalReq} 合格`}
+      </span>
+    </div>
+    ${totalSubmitted > 0 ? `<div style="font-size:12px;color:var(--orange);margin-bottom:12px;padding-left:4px">${totalSubmitted}通 採点待ち</div>` : ''}`;
+
+  for (const subj of SUBJECTS) {
+    const total = subj.reports;
+    const reports = Array.from({ length: total }, (_, i) => getReport(subj.id, i));
+    const passedCount = reports.filter(r => r.status === 'passed').length;
+    const submittedCount = reports.filter(r => r.status === 'submitted').length;
+    const allDone = passedCount === total;
+    const isExpanded = expandedSubjects.has(subj.id);
+
+    // 直近の期限を探す
+    let nearestDeadline = null;
+    for (const r of reports) {
+      if (r.status !== 'passed' && r.deadline) {
+        if (!nearestDeadline || r.deadline < nearestDeadline) nearestDeadline = r.deadline;
+      }
+    }
+    const sev = nearestDeadline ? deadlineSeverity(nearestDeadline) : 'none';
+
+    const pct = total > 0 ? (passedCount / total * 100) : 100;
+    const barColor = allDone ? '#34C759' : '#007AFF';
+
+    html += `<div class="r-card">
+      <div class="r-card-header" onclick="toggleExpand('${subj.id}')">
+        <span class="r-chevron${isExpanded ? ' open' : ''}">▶</span>
+        <div class="r-card-info">
+          <div class="r-card-name">${subj.name}</div>
+          <div class="r-card-cat">${subj.cat}</div>
+        </div>
+        <div class="r-card-right">
+          <div class="r-card-count${allDone ? ' done' : ''}">${allDone ? '✓ 完了' : `${passedCount} / ${total} 合格`}</div>
+          ${submittedCount > 0 && !allDone ? `<div class="r-pending">${submittedCount}通 採点待ち</div>` : ''}
+          ${nearestDeadline && !allDone ? `<div style="font-size:11px;${sev==='past'?'color:var(--red)':sev==='soon'?'color:var(--orange)':'color:var(--sub)'}">期限 ${formatDeadlineDate(nearestDeadline)}${sev==='past'?' ⚠️':sev==='soon'?' !':''}</div>` : ''}
+          <div class="r-minibar"><div class="r-minibar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+        </div>
+      </div>`;
+
+    if (isExpanded) {
+      html += `<div class="r-reports">`;
+      for (let i = 0; i < total; i++) {
+        const rpt = reports[i];
+        const statusLabel = rpt.status === 'none' ? '未提出' : rpt.status === 'submitted' ? '提出済' : '合格';
+        const dlSev = rpt.deadline ? deadlineSeverity(rpt.deadline) : 'none';
+        const dlClass = dlSev === 'past' ? ' past' : dlSev === 'soon' ? ' soon' : '';
+        html += `<div class="r-row">
+          <span class="r-num">第${i+1}回</span>
+          <button class="r-status-btn ${rpt.status}" onclick="tapReport('${subj.id}',${i})">${statusLabel}</button>
+          <div class="r-deadline-wrap">
+            ${rpt.deadline
+              ? `<span class="r-deadline-label${dlClass}">${dlSev==='past'?'⚠️ ':dlSev==='soon'?'! ':''}${formatDeadlineDate(rpt.deadline)}</span>`
+              : ''
+            }
+            <input class="r-date-input" type="date" value="${rpt.deadline || ''}"
+              onchange="setReportDeadline('${subj.id}',${i},this.value)">
+          </div>
+        </div>`;
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+  }
+  return html;
+}
+
+// ── Actions ───────────────────────────────────────────
+function showTab(tab) { currentTab = tab; render(); }
+function prevDay() { if (dayIndex > 0) { dayIndex--; render(); } }
+function nextDay() { if (dayIndex < SCHOOL_DAYS.length-1) { dayIndex++; render(); } }
+function tap(date, id, sem, periodId) { cycleState(date, id, sem, periodId); render(); }
+function toggleExpand(id) {
+  if (expandedSubjects.has(id)) expandedSubjects.delete(id);
+  else expandedSubjects.add(id);
+  render();
+}
+function tapReport(id, num) { cycleReportStatus(id, num); }
+
+render();
+</script>
+</body>
+</html>
