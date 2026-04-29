@@ -141,6 +141,28 @@
     .setup-autosave { font-size: 12px; color: var(--sub); text-align: center; padding: 10px 0; }
     .settings-section-head { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
     .danger-btn { width: 100%; padding: 13px; border-radius: 14px; border: 1.5px solid var(--red); background: transparent; color: var(--red); font-size: 15px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent; font-family: inherit; margin-top: 8px; }
+
+    /* ── 生徒選択画面 ── */
+    .student-picker { padding: 0 16px 40px; }
+    .picker-hero { text-align: center; padding: 56px 0 32px; }
+    .picker-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    .picker-sub { font-size: 14px; color: var(--sub); }
+    .picker-section-label { font-size: 12px; font-weight: 600; color: var(--sub); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 4px 8px; }
+    .picker-list { margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px; }
+    .student-card { display: flex; align-items: center; gap: 12px; background: var(--card); border-radius: 14px; padding: 16px 18px; border: none; width: 100%; text-align: left; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.07); -webkit-tap-highlight-color: transparent; }
+    .student-card:active { opacity: 0.7; }
+    .student-icon { font-size: 22px; }
+    .student-name-label { flex: 1; font-size: 16px; font-weight: 600; }
+    .student-chevron { font-size: 22px; color: var(--gray-light); }
+    .picker-add-box { background: var(--card); border-radius: 14px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+    .picker-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; margin-bottom: 10px; font-family: inherit; background: var(--gray-bg); outline: none; box-sizing: border-box; }
+    .picker-input:focus { border-color: var(--blue); background: #fff; }
+    .picker-add-btn { width: 100%; padding: 14px; background: var(--blue); color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; -webkit-tap-highlight-color: transparent; }
+    .picker-add-btn:active { opacity: 0.85; }
+
+    /* 生徒切替ボタン（設定タブ） */
+    .switch-student-btn { display: flex; align-items: center; gap: 10px; width: 100%; background: var(--card); border: none; border-radius: 14px; padding: 14px 16px; cursor: pointer; font-family: inherit; box-shadow: 0 1px 3px rgba(0,0,0,0.07); -webkit-tap-highlight-color: transparent; }
+    .switch-student-btn:active { opacity: 0.7; }
   </style>
 </head>
 <body>
@@ -265,44 +287,77 @@ const DEFAULT_CONFIG = {
   }
 };
 
+// ── 生徒管理 ─────────────────────────────────────────
+const STUDENTS_KEY = 'tani_students_v1';
+const ACTIVE_KEY   = 'tani_active_v1';
+let students = [];
+let activeStudentId = null;
+
+function loadStudentList() {
+  try { return JSON.parse(localStorage.getItem(STUDENTS_KEY) || '[]'); } catch { return []; }
+}
+function saveStudentList() { localStorage.setItem(STUDENTS_KEY, JSON.stringify(students)); }
+function addStudent(name) {
+  const id = Date.now().toString();
+  students.push({ id, name: name.trim() });
+  saveStudentList();
+  return id;
+}
+function initStudents() {
+  students = loadStudentList();
+  activeStudentId = localStorage.getItem(ACTIVE_KEY);
+  // 旧形式（単一生徒）データがあれば移行
+  if (students.length === 0) {
+    const oldCfg = localStorage.getItem('tani_config_v1');
+    const oldRec = localStorage.getItem('tani_v3');
+    const oldRpt = localStorage.getItem('tani_reports_v1');
+    if (oldCfg || (oldRec && oldRec !== '[]')) {
+      const sid = 'student_1';
+      students = [{ id: sid, name: '生徒1' }];
+      saveStudentList();
+      if (oldCfg) localStorage.setItem(`tani_config_${sid}`, oldCfg);
+      if (oldRec && oldRec !== '[]') localStorage.setItem(`tani_v3_${sid}`, oldRec);
+      if (oldRpt && oldRpt !== '{}') localStorage.setItem(`tani_reports_${sid}`, oldRpt);
+      activeStudentId = sid;
+      localStorage.setItem(ACTIVE_KEY, sid);
+    }
+  }
+  if (activeStudentId && !students.find(s => s.id === activeStudentId)) {
+    activeStudentId = null;
+    localStorage.removeItem(ACTIVE_KEY);
+  }
+}
+
 // ── 設定管理 ──────────────────────────────────────────
-const CONFIG_KEY = 'tani_config_v1';
 function loadConfig() {
+  if (!activeStudentId) return null;
   try {
-    const s = JSON.parse(localStorage.getItem(CONFIG_KEY) || 'null');
+    const key = `tani_config_${activeStudentId}`;
+    const s = JSON.parse(localStorage.getItem(key) || 'null');
     if (s) {
       let changed = false;
-      // 移行: taiiku → taiiku_mae
       if (s.subjects?.taiiku) {
         s.subjects.taiiku_mae = { enrolled: s.subjects.taiiku.enrolled };
-        delete s.subjects.taiiku;
-        changed = true;
+        delete s.subjects.taiiku; changed = true;
       }
-      // 移行: eigo2 → eigo2_1
       if (s.subjects?.eigo2) {
         s.subjects.eigo2_1 = { enrolled: s.subjects.eigo2.enrolled };
-        delete s.subjects.eigo2;
-        changed = true;
+        delete s.subjects.eigo2; changed = true;
       }
-      // 移行：前期/後期選択が必要な科目に sem フィールドがなければ DEFAULT_CONFIG から補完
       for (const subj of ALL_SUBJECTS) {
         if (subj.type === 'fixed' && subj.semOpts.length > 1 && s.subjects?.[subj.id]?.enrolled && !s.subjects[subj.id].sem) {
           s.subjects[subj.id].sem = DEFAULT_CONFIG.subjects?.[subj.id]?.sem || subj.semOpts[0];
           changed = true;
         }
       }
-      if (changed) localStorage.setItem(CONFIG_KEY, JSON.stringify(s));
+      if (changed) localStorage.setItem(key, JSON.stringify(s));
       return s;
-    }
-    const existing = JSON.parse(localStorage.getItem('tani_v3') || '[]');
-    if (existing.length > 0) {
-      localStorage.setItem(CONFIG_KEY, JSON.stringify(DEFAULT_CONFIG));
-      return DEFAULT_CONFIG;
     }
     return null;
   } catch { return null; }
 }
-function saveConfig() { localStorage.setItem(CONFIG_KEY, JSON.stringify(studentConfig)); }
+function saveConfig() { localStorage.setItem(`tani_config_${activeStudentId}`, JSON.stringify(studentConfig)); }
+initStudents();
 let studentConfig = loadConfig() || { setup_done: false, subjects: {} };
 
 // ── 単位計算 ──────────────────────────────────────────
@@ -637,19 +692,17 @@ const TIMETABLE = {
 })();
 
 // ── 出席 Storage ──────────────────────────────────────
-const ATTEND_KEY = 'tani_v3';
 function loadAttend() {
-  try { return JSON.parse(localStorage.getItem(ATTEND_KEY) || '[]'); } catch { return []; }
+  try { return JSON.parse(localStorage.getItem(`tani_v3_${activeStudentId}`) || '[]'); } catch { return []; }
 }
-function saveAttend() { localStorage.setItem(ATTEND_KEY, JSON.stringify(records)); }
+function saveAttend() { localStorage.setItem(`tani_v3_${activeStudentId}`, JSON.stringify(records)); }
 let records = loadAttend();
 
 // ── レポート Storage ──────────────────────────────────
-const REPORT_KEY = 'tani_reports_v1';
 function loadReports() {
-  try { return JSON.parse(localStorage.getItem(REPORT_KEY) || '{}'); } catch { return {}; }
+  try { return JSON.parse(localStorage.getItem(`tani_reports_${activeStudentId}`) || '{}'); } catch { return {}; }
 }
-function saveReportData() { localStorage.setItem(REPORT_KEY, JSON.stringify(rptData)); }
+function saveReportData() { localStorage.setItem(`tani_reports_${activeStudentId}`, JSON.stringify(rptData)); }
 let rptData = loadReports();
 
 // ── 出席 状態管理 ─────────────────────────────────────
@@ -768,6 +821,11 @@ function render() {
   const el = document.getElementById('scroll');
   const nav = document.getElementById('bottom-nav');
 
+  if (!activeStudentId) {
+    el.innerHTML = renderStudentPicker();
+    nav.style.display = 'none';
+    return;
+  }
   if (!studentConfig.setup_done) {
     el.innerHTML = renderSetup(false);
     nav.style.display = 'none';
@@ -852,8 +910,16 @@ function renderSetup(isSettings) {
 
 // ── Settings View ─────────────────────────────────────
 function renderSettings() {
+  const active = students.find(s => s.id === activeStudentId);
   return `
     <div class="settings-section-head">設定</div>
+    <div style="padding:0 16px 16px">
+      <button class="switch-student-btn" onclick="switchStudent()">
+        <span style="font-size:18px">👤</span>
+        <span style="flex:1;text-align:left">${active?.name ?? ''}のプロフィール</span>
+        <span style="font-size:13px;color:var(--blue);font-weight:600">切り替え</span>
+      </button>
+    </div>
     ${renderSetup(true)}
     <div style="margin-top:24px;margin-bottom:8px;font-size:13px;font-weight:600;color:var(--sub)">データ管理</div>
     <button class="danger-btn" onclick="confirmReset()">出席・レポートデータをリセット</button>
@@ -1125,6 +1191,55 @@ function toggleExpand(id) {
   render();
 }
 function tapReport(id, num) { cycleReportStatus(id, num); }
+
+// ── 生徒選択 UI ───────────────────────────────────────
+function renderStudentPicker() {
+  const cards = students.map(s => `
+    <button class="student-card" onclick="selectStudent('${s.id}')">
+      <span class="student-icon">👤</span>
+      <span class="student-name-label">${s.name}</span>
+      <span class="student-chevron">›</span>
+    </button>`).join('');
+  return `
+    <div class="student-picker">
+      <div class="picker-hero">
+        <div class="picker-title">誰が使いますか？</div>
+        <div class="picker-sub">あなたのプロフィールを選んでください</div>
+      </div>
+      ${students.length ? `<div class="picker-section-label">プロフィール</div><div class="picker-list">${cards}</div>` : ''}
+      <div class="picker-section-label">新しく追加</div>
+      <div class="picker-add-box">
+        <input type="text" id="new-student-name" class="picker-input" placeholder="名前を入力してください" maxlength="20">
+        <button class="picker-add-btn" onclick="addStudentAndSelect()">追加して始める</button>
+      </div>
+    </div>`;
+}
+
+function selectStudent(id) {
+  activeStudentId = id;
+  localStorage.setItem(ACTIVE_KEY, id);
+  records = loadAttend();
+  rptData = loadReports();
+  studentConfig = loadConfig() || { setup_done: false, subjects: {} };
+  expandedSubjects = new Set();
+  currentTab = 'today';
+  dayIndex = defaultDayIndex();
+  render();
+}
+
+function switchStudent() {
+  activeStudentId = null;
+  localStorage.removeItem(ACTIVE_KEY);
+  render();
+}
+
+function addStudentAndSelect() {
+  const input = document.getElementById('new-student-name');
+  const name = input?.value?.trim();
+  if (!name) { input?.focus(); return; }
+  const id = addStudent(name);
+  selectStudent(id);
+}
 
 // ── Setup Actions ─────────────────────────────────────
 function toggleEnroll(id) {
