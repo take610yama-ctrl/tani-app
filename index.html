@@ -56,8 +56,10 @@
     .s-meta { display: flex; align-items: center; gap: 6px; margin-top: 3px; flex-wrap: wrap; }
     .s-cat { font-size: 12px; color: var(--sub); }
     .s-right { display: flex; align-items: center; gap: 9px; flex-shrink: 0; margin-left: 10px; }
+    .s-rem-col { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
     .s-rem { font-size: 13px; color: var(--blue); font-weight: 500; white-space: nowrap; }
     .s-rem.done { color: var(--green); }
+    .s-rem-plan { font-size: 11px; color: var(--orange); font-weight: 600; white-space: nowrap; }
     .badge-done  { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: #E5E5EA; color: var(--gray); white-space: nowrap; }
     .badge-rec   { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: #FFF3E0; color: #E65100; white-space: nowrap; }
     .rec-reason  { font-size: 11px; color: #E65100; }
@@ -67,10 +69,16 @@
     .no-tt-note { font-size: 12px; color: var(--sub); text-align: center; padding: 8px 0 4px; }
 
     /* ── Progress View ── */
-    .progress-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
+    .progress-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
     .progress-title { font-size: 22px; font-weight: 700; }
+    .total-rem-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
     .total-rem { font-size: 13px; font-weight: 600; color: var(--blue); }
+    .total-rem-plan { font-size: 12px; font-weight: 600; color: var(--orange); }
     .total-done { font-size: 13px; font-weight: 600; color: var(--green); }
+    .pc-rem-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+    .pc-rem-plan { font-size: 11px; color: var(--orange); font-weight: 600; }
+    .sem-rem-col { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; width: 68px; flex-shrink: 0; }
+    .sem-plan { font-size: 10px; color: var(--orange); font-weight: 600; white-space: nowrap; }
     .section-head { font-size: 12px; font-weight: 600; color: var(--sub); letter-spacing: 0.5px; margin-bottom: 8px; padding-left: 4px; }
     .progress-section { margin-bottom: 24px; }
     .p-card { background: var(--card); border-radius: 14px; padding: 14px 16px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
@@ -86,7 +94,7 @@
     .sem-row { display: flex; align-items: center; gap: 8px; }
     .sem-label { font-size: 12px; font-weight: 600; color: var(--sub); width: 28px; flex-shrink: 0; }
     .sem-bar { flex: 1; }
-    .sem-count { font-size: 12px; font-weight: 600; color: var(--blue); width: 40px; text-align: right; flex-shrink: 0; }
+    .sem-count { font-size: 12px; font-weight: 600; color: var(--blue); text-align: right; white-space: nowrap; }
     .sem-count.ok { color: var(--green); }
 
     /* ── Report View ── */
@@ -722,18 +730,24 @@ function cycleState(date, id, sem, periodId) {
 function sumCount(rs) { return rs.reduce((s, r) => s + (r.count || 1), 0); }
 function getProgress(subj) {
   if (subj.type === 'annual') {
-    const attended = sumCount(records.filter(r => r.id === subj.id && r.type === 'actual'));
+    const attended  = sumCount(records.filter(r => r.id === subj.id && r.type === 'actual'));
+    const planned   = sumCount(records.filter(r => r.id === subj.id && r.type === 'planned'));
     const remaining = Math.max(0, subj.total - attended);
-    return { type: 'annual', total: subj.total, attended, remaining, done: remaining === 0 };
+    const remWithPlan = Math.max(0, subj.total - attended - planned);
+    return { type: 'annual', total: subj.total, attended, planned, remaining, remWithPlan, done: remaining === 0 };
   }
-  const maeCount = sumCount(records.filter(r => r.id === subj.id && r.sem === '前期' && r.type === 'actual'));
-  const atoCount = sumCount(records.filter(r => r.id === subj.id && r.sem === '後期' && r.type === 'actual'));
-  const maeRem = Math.max(0, subj.mae - maeCount);
-  const atoRem = Math.max(0, subj.ato - atoCount);
+  const maeAct  = sumCount(records.filter(r => r.id === subj.id && r.sem === '前期' && r.type === 'actual'));
+  const atoAct  = sumCount(records.filter(r => r.id === subj.id && r.sem === '後期' && r.type === 'actual'));
+  const maePlan = sumCount(records.filter(r => r.id === subj.id && r.sem === '前期' && r.type === 'planned'));
+  const atoPlan = sumCount(records.filter(r => r.id === subj.id && r.sem === '後期' && r.type === 'planned'));
+  const maeRem  = Math.max(0, subj.mae - maeAct);
+  const atoRem  = Math.max(0, subj.ato - atoAct);
+  const maeRemWP = Math.max(0, subj.mae - maeAct - maePlan);
+  const atoRemWP = Math.max(0, subj.ato - atoAct - atoPlan);
   return {
     type: 'fixed',
-    mae: { req: subj.mae, attended: maeCount, rem: maeRem },
-    ato: { req: subj.ato, attended: atoCount, rem: atoRem },
+    mae: { req: subj.mae, attended: maeAct, planned: maePlan, rem: maeRem, remWithPlan: maeRemWP },
+    ato: { req: subj.ato, attended: atoAct, planned: atoPlan, rem: atoRem, remWithPlan: atoRemWP },
     done: maeRem === 0 && atoRem === 0,
   };
 }
@@ -741,6 +755,12 @@ function totalRemaining() {
   return getActiveSubjects().reduce((s, subj) => {
     const p = getProgress(subj);
     return s + (p.type === 'annual' ? p.remaining : p.mae.rem + p.ato.rem);
+  }, 0);
+}
+function totalRemainingWithPlan() {
+  return getActiveSubjects().reduce((s, subj) => {
+    const p = getProgress(subj);
+    return s + (p.type === 'annual' ? p.remWithPlan : p.mae.remWithPlan + p.ato.remWithPlan);
   }, 0);
 }
 
@@ -991,7 +1011,9 @@ function renderToday() {
         html += `<div class="subject-list">`;
         for (const { subj, p, state, isDone, score } of items) {
           const isRec = !isDone && state !== 'actual' && topScore > 0 && score >= topScore * 0.85 && items.length > 1;
-          const semRem = subj.type === 'annual' ? p.remaining : (sem === '前期' ? p.mae.rem : p.ato.rem);
+          const semRem    = subj.type === 'annual' ? p.remaining    : (sem === '前期' ? p.mae.rem        : p.ato.rem);
+          const semRemWP  = subj.type === 'annual' ? p.remWithPlan  : (sem === '前期' ? p.mae.remWithPlan : p.ato.remWithPlan);
+          const hasPlan   = semRemWP < semRem;
           const disabledRow = isDone && !state;
           const stateIcon = state === 'actual' ? '✓' : state === 'planned' ? '▷' : '';
           html += `
@@ -1008,7 +1030,10 @@ function renderToday() {
               <div class="s-right">
                 ${disabledRow
                   ? `<span class="badge-done">取得済</span>`
-                  : `<span class="s-rem${semRem===0?' done':''}">${semRem===0?'完了':`あと${semRem}h`}</span>`
+                  : `<div class="s-rem-col">
+                      <span class="s-rem${semRem===0?' done':''}">${semRem===0?'完了':`実績 あと${semRem}h`}</span>
+                      ${hasPlan ? `<span class="s-rem-plan">予定込 あと${semRemWP}h</span>` : ''}
+                    </div>`
                 }
                 <span class="state-circle${state?' '+state:''}">${stateIcon}</span>
               </div>
@@ -1070,16 +1095,32 @@ function renderProgress() {
   const todo = all.filter(s => !s.p.done);
   const done = all.filter(s => s.p.done);
   const rem = totalRemaining();
+  const remWP = totalRemainingWithPlan();
+  const hasPlanTotal = remWP < rem;
 
   const cardHTML = (s, grayed) => {
     const p = s.p;
     let body = '';
     if (s.type === 'annual') {
-      body = `<div class="pc-nums"><span>${p.attended} / ${p.total} 時間</span>${!grayed?`<span class="pc-rem">あと ${p.remaining} 時間</span>`:''}</div>${bar(p.attended, p.total, grayed?'#C7C7CC':'#007AFF')}`;
+      const hasPlan = !grayed && p.remWithPlan < p.remaining;
+      const planTag = hasPlan ? `<span class="pc-rem-plan">予定込 あと${p.remWithPlan}h</span>` : '';
+      body = `<div class="pc-nums">
+        <span>${p.attended} / ${p.total} 時間</span>
+        ${!grayed ? `<div class="pc-rem-wrap"><span class="pc-rem">実績 あと ${p.remaining} 時間</span>${planTag}</div>` : ''}
+      </div>${bar(p.attended, p.total, grayed?'#C7C7CC':'#007AFF')}`;
     } else {
       const semRows = [['前期', p.mae], ['後期', p.ato]].filter(([,d]) => d.req > 0).map(([lbl, data]) => {
         const ok = data.rem === 0;
-        return `<div class="sem-row"><span class="sem-label">${lbl}</span><div class="sem-bar">${bar(data.attended, data.req, ok?'#34C759':'#007AFF')}</div><span class="sem-count${ok?' ok':''}">${ok?'✓':`あと${data.rem}h`}</span></div>`;
+        const hasPlanSem = !grayed && !ok && data.remWithPlan < data.rem;
+        const planSpan = hasPlanSem ? `<span class="sem-plan">予定込${data.remWithPlan}h</span>` : '';
+        return `<div class="sem-row">
+          <span class="sem-label">${lbl}</span>
+          <div class="sem-bar">${bar(data.attended, data.req, ok?'#34C759':'#007AFF')}</div>
+          <div class="sem-rem-col">
+            <span class="sem-count${ok?' ok':''}">${ok?'✓':`実績 あと${data.rem}h`}</span>
+            ${planSpan}
+          </div>
+        </div>`;
       }).join('');
       body = `<div class="sem-rows">${semRows}</div>`;
     }
@@ -1091,7 +1132,10 @@ function renderProgress() {
   return `
     <div class="progress-header">
       <span class="progress-title">スクーリング進捗</span>
-      ${rem===0?'<span class="total-done">全科目完了！</span>':`<span class="total-rem">残り ${rem} 時間</span>`}
+      <div class="total-rem-wrap">
+        ${rem===0?'<span class="total-done">全科目完了！</span>':`<span class="total-rem">実績 残り ${rem} 時間</span>`}
+        ${hasPlanTotal && rem > 0 ? `<span class="total-rem-plan">予定込 残り ${remWP} 時間</span>` : ''}
+      </div>
     </div>
     ${todo.length?`<div class="progress-section"><div class="section-head">取得中（${todo.length}科目）</div>${todo.map(s=>cardHTML(s,false)).join('')}</div>`:''}
     ${done.length?`<div class="progress-section"><div class="section-head">完了（${done.length}科目）</div>${done.map(s=>cardHTML(s,true)).join('')}</div>`:''}`;
