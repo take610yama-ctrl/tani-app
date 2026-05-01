@@ -256,6 +256,7 @@ const ALL_SUBJECTS = [
   // 家庭（2科目）
   { id: 'katei',          name: '家庭基礎',                 cat: '家庭',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 4,  reports: 4,  credits: 2 },
   { id: 'ikuji',          name: '育児基礎',                 cat: '家庭',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 2,  reports: 4,  credits: 2 },
+  { id: 'hoiku_kiso',     name: '保育基礎',                 cat: '家庭',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 2,  reports: 4,  credits: 2 },
   // 情報（3科目）
   { id: 'joho1',          name: '情報Ⅰ',                   cat: '情報',     type: 'fixed',  semOpts: ['前期','後期'], skuPerSem: 4,  reports: 4,  credits: 2 },
   { id: 'joho_design',    name: '情報デザイン',             cat: '情報',     type: 'fixed',  semOpts: ['前期'],        skuPerSem: 4,  reports: 4,  credits: 2 },
@@ -458,11 +459,11 @@ const TIMETABLE = {
     7:  ['gendai_kokugo', 'kagaku'],
   },
   '2026-05-23': {
-    1:  ['sugaku1', 'hoken'],
-    2:  ['chiri_sogo', 'kokyou'],
-    34: ['eigo1', 'joho1'],
-    56: ['taiiku_mae', 'shodo1', 'eigo1'],
-    7:  ['gendai_kokugo'],
+    1:  'special:定期健康診断',
+    2:  'special:定期健康診断',
+    34: 'special:定期健康診断',
+    56: 'special:定期健康診断',
+    7:  'special:定期健康診断',
   },
   '2026-05-30': {
     1:  ['sugaku1', 'hoken'],
@@ -652,23 +653,19 @@ const TIMETABLE = {
 // 全日追加する科目
 (function augmentTimetable() {
   const EXTRA_ALL = {
-    1:  ['sugaku2', 'sugakuA', 'sugaku_basic'],
-    2:  ['butsuri', 'kagaku_kiso', 'seibutsu', 'chigaku', 'seiji_keizai', 'nihonshi', 'sekaisshi', 'edo_tokyo', 'biz_kiso', 'marketing', 'biz_houki'],
-    34: ['ronri_hyogen1', 'ikuji'],
-    56: ['ongaku1', 'ongaku2', 'bijutsu1', 'bijutsu2', 'shodo2', 'kogei1'],
-    7:  ['ronri_kokugo', 'kokugo_hyogen', 'kokugo_basic'],
+    1:  ['rekishi_sogo', 'biz_houki', 'kokugo_basic'],
+    2:  ['kokugo_hyogen', 'gengo_bunka', 'chiri_sogo', 'nihonshi', 'kokyou', 'kagaku', 'biz_kiso', 'marketing', 'sugaku_basic', 'basic_eigo'],
+    34: ['sugaku2', 'kagaku_kiso', 'seibutsu', 'chigaku', 'ongaku2', 'bijutsu2', 'shodo2', 'eigo1', 'katei', 'joho1', 'ikuji'],
+    56: ['butsuri', 'edo_tokyo', 'ongaku1', 'bijutsu1', 'eigo1', 'ronri_hyogen1', 'kogei1'],
+    7:  ['gendai_kokugo', 'ronri_kokugo', 'sekaisshi', 'seiji_keizai', 'sugakuA', 'kagaku', 'biz_kiso', 'marketing', 'biz_houki', 'hoiku_kiso'],
   };
   const EXTRA_MAE = {
-    2:  ['gengo_bunka', 'rekishi_sogo', 'basic_sciA'],
-    34: ['katei', 'eigo2_1', 'joho_design', 'joho_basic', 'basic_eigo'],
-    56: ['taiiku_mae'],
+    34: ['taiiku_mae', 'eigo2_1'],
+    56: ['taiiku_mae', 'basic_sciA', 'joho_basic'],
   };
   const EXTRA_ATO = {
-    1:  ['hoken'],
-    2:  ['kokyou', 'chiri_sogo', 'basic_sciB'],
-    7:  ['gendai_kokugo'],
-    34: ['joho1', 'eigo2_2'],
-    56: ['taiiku_ato'],
+    34: ['taiiku_ato', 'eigo2_2'],
+    56: ['taiiku_ato', 'basic_sciB', 'joho_design'],
   };
 
   for (const day of SCHOOL_DAYS) {
